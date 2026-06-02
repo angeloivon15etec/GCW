@@ -1,2 +1,1 @@
- https://angeloivon15etec.github.io/Ondas-cia
- https://kevinsouza17.github.io/fotografia/
+ https://angeloivon15etec.github.io/ondas-cia/index.html
