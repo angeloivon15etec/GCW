@@ -1,1 +1,1 @@
- https://angeloivon15etec.github.io/ondas-cia/index.html
+ https://angeloivon15etec.github.io/ondas-cia/ondas-e-cia.html
