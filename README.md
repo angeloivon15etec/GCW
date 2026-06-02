@@ -1,1 +1,1 @@
- https://angeloivon15etec.github.io/GCW/ondas-cia/
+ https://angeloivon15etec.github.io/GCW/ondas-cia
