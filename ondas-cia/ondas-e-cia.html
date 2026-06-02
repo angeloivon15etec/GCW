@@ -1,0 +1,2839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Ondas & Cia — Aluguel de equipamentos de praia e escola de surf em Ubatuba. Alugue, aprenda, surfe com Bruno Nascimento." />
+<title>Ondas & Cia — Aluguel & Escola de Surf · Ubatuba</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root{
+    --ocean:#0A2342;
+    --turquoise:#00C2C7;
+    --sand:#F2E3C6;
+    --coral:#FF6B4A;
+    --seafoam:#F7FAFA;
+    --ink:#0A2342;
+    --muted:#5b6b80;
+    --shadow: 0 20px 60px -20px rgba(10,35,66,.35);
+    --shadow-soft: 0 8px 30px -10px rgba(10,35,66,.18);
+    --font-size-base: 16px;
+    --letter-spacing: 0;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth; font-size:var(--font-size-base)}
+  body{
+    font-family:'DM Sans',sans-serif;
+    color:var(--ink);
+    background:var(--seafoam);
+    overflow-x:hidden;
+    line-height:1.6;
+    cursor:none;
+    letter-spacing: var(--letter-spacing);
+  }
+  @media (hover:none){ body{cursor:auto} }
+
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:none;border:none;background:none}
+  @media (hover:none){ button{cursor:pointer} }
+
+  /* ---------- CUSTOM CURSOR ---------- */
+  .cursor-dot{
+    position:fixed; top:0; left:0; width:12px; height:12px;
+    background:var(--turquoise); border-radius:50%;
+    pointer-events:none; z-index:9999;
+    transform:translate(-50%,-50%);
+    transition:transform .15s ease, background .2s ease, width .2s, height .2s;
+    mix-blend-mode:difference;
+  }
+  .cursor-ring{
+    position:fixed; top:0; left:0; width:38px; height:38px;
+    border:1.5px solid rgba(0,194,199,.6); border-radius:50%;
+    pointer-events:none; z-index:9999;
+    transform:translate(-50%,-50%);
+    transition:transform .25s ease, width .25s, height .25s, border-color .25s;
+  }
+  .cursor-dot.hover{ width:20px; height:20px; background:var(--coral) }
+  .cursor-ring.hover{ width:60px; height:60px; border-color:var(--coral) }
+  @media (hover:none){ .cursor-dot,.cursor-ring{display:none} }
+
+  /* ---------- PAGE LOADER ---------- */
+  .loader{
+    position:fixed; inset:0; background:var(--ocean);
+    display:flex; align-items:center; justify-content:center;
+    z-index:10000; transition:opacity .8s ease, visibility .8s;
+  }
+  .loader.hide{opacity:0; visibility:hidden}
+  .loader-wave{ width:120px; height:60px; position:relative; }
+  .loader-wave svg{width:100%;height:100%}
+  .loader-wave path{
+    stroke:var(--turquoise); stroke-width:3; fill:none;
+    stroke-dasharray:300; stroke-dashoffset:300;
+    animation:drawWave 1.4s ease-in-out infinite;
+  }
+  @keyframes drawWave{
+    0%{stroke-dashoffset:300}
+    50%{stroke-dashoffset:0}
+    100%{stroke-dashoffset:-300}
+  }
+  .loader-text{
+    position:absolute; bottom:-40px; left:50%; transform:translateX(-50%);
+    font-family:'Space Mono',monospace; color:var(--turquoise);
+    letter-spacing:.3em; font-size:.7rem; text-transform:uppercase;
+  }
+
+  /* ---------- NAVBAR ---------- */
+  .navbar{
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    padding:1.2rem 2.5rem; display:flex; justify-content:space-between; align-items:center;
+    transition:background .35s ease, padding .35s ease, box-shadow .35s;
+  }
+  .navbar.scrolled{
+    background:rgba(10,35,66,.95);
+    backdrop-filter:blur(12px);
+    padding:.8rem 2.5rem;
+    box-shadow:0 4px 30px rgba(0,0,0,.2);
+  }
+  .nav-logo{
+    font-family:'Playfair Display',serif; font-weight:700;
+    color:#fff; font-size:1.5rem; letter-spacing:.02em;
+  }
+  .nav-logo span{color:var(--turquoise)}
+  .nav-links{
+    display:flex; gap:2rem; list-style:none; align-items:center;
+  }
+  .nav-links a{
+    color:#fff; font-size:.92rem; font-weight:500; position:relative;
+    padding:.3rem 0; transition:color .2s;
+  }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:-2px; width:0; height:2px;
+    background:var(--turquoise); transition:width .3s ease;
+  }
+  .nav-links a:hover{color:var(--turquoise)}
+  .nav-links a:hover::after{width:100%}
+
+  /* Login Button na Navbar */
+  .nav-login-btn{
+    background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.3);
+    color:#fff; padding:.45rem 1.1rem; border-radius:50px;
+    font-size:.85rem; font-weight:600; cursor:pointer;
+    transition:all .25s; display:flex; align-items:center; gap:.4rem;
+    white-space:nowrap;
+  }
+  .nav-login-btn:hover{ background:var(--turquoise); border-color:var(--turquoise); color:var(--ocean) }
+  .nav-login-btn svg{ width:16px; height:16px; fill:currentColor }
+
+  /* Avatar do usuário logado */
+  .nav-user-container{
+    display:flex; align-items:center; gap:1rem;
+  }
+  .btn-profile-direct{
+    background:var(--turquoise); color:#fff; border:none;
+    padding:.5rem 1rem; border-radius:50px; font-size:.85rem; font-weight:600;
+    display:flex; align-items:center; gap:.5rem; cursor:pointer;
+    transition:all .3s; box-shadow:0 4px 15px rgba(0,194,199,.3);
+  }
+  .btn-profile-direct:hover{ background:var(--coral); transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,107,74,.4); }
+  .btn-profile-direct svg{ width:18px; height:18px; fill:currentColor }
+  .nav-user{
+    display:flex; align-items:center; gap:.6rem; cursor:pointer;
+    position:relative;
+  }
+  .nav-avatar{
+    width:36px; height:36px; border-radius:50%;
+    background:linear-gradient(135deg, var(--turquoise), var(--coral));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:.85rem; color:#fff; flex-shrink:0;
+    border:2px solid rgba(255,255,255,.3);
+    box-shadow: 0 0 10px rgba(0,194,199,0.3);
+    animation: avatarPulse 2s infinite;
+  }
+  @keyframes avatarPulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,194,199,0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(0,194,199,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,194,199,0); }
+  }
+  .nav-user-name{ color:#fff; font-size:.88rem; font-weight:500 }
+  .nav-user-dropdown{
+    position:absolute; top:calc(100% + 12px); right:0;
+    background:#fff; border-radius:16px; padding:.8rem 0;
+    min-width:200px; box-shadow:0 20px 60px rgba(0,0,0,.2);
+    opacity:0; visibility:hidden; transform:translateY(-8px);
+    transition:all .25s; z-index:100;
+  }
+  .nav-user:hover .nav-user-dropdown,
+  .nav-user.open .nav-user-dropdown{
+    opacity:1; visibility:visible; transform:translateY(0);
+  }
+  .nav-user-dropdown a, .nav-user-dropdown button{
+    display:flex; align-items:center; gap:.7rem;
+    padding:.65rem 1.2rem; font-size:.88rem; color:var(--ink);
+    transition:background .2s; width:100%; text-align:left;
+  }
+  .nav-user-dropdown a:hover, .nav-user-dropdown button:hover{
+    background:var(--seafoam);
+  }
+  .nav-user-dropdown svg{ width:16px; height:16px; fill:var(--muted) }
+  .nav-user-dropdown .dd-divider{
+    height:1px; background:#eee; margin:.4rem 0;
+  }
+  .nav-user-dropdown .dd-logout{ color:var(--coral) }
+  .nav-user-dropdown .dd-logout svg{ fill:var(--coral) }
+
+  .hamburger{
+    display:none; width:30px; height:22px; position:relative; cursor:pointer;
+  }
+  .hamburger span{
+    position:absolute; left:0; width:100%; height:2px; background:#fff;
+    transition:all .35s ease;
+  }
+  .hamburger span:nth-child(1){top:0}
+  .hamburger span:nth-child(2){top:10px}
+  .hamburger span:nth-child(3){top:20px}
+  .hamburger.open span:nth-child(1){top:10px; transform:rotate(45deg)}
+  .hamburger.open span:nth-child(2){opacity:0}
+  .hamburger.open span:nth-child(3){top:10px; transform:rotate(-45deg)}
+
+  .mobile-drawer{
+    position:fixed; top:0; right:-100%; width:80%; max-width:340px; height:100vh;
+    background:var(--ocean); z-index:999; padding:6rem 2rem 2rem;
+    transition:right .45s cubic-bezier(.77,0,.18,1);
+    box-shadow:-20px 0 60px rgba(0,0,0,.4);
+  }
+  .mobile-drawer.open{right:0}
+  .mobile-drawer ul{list-style:none; display:flex; flex-direction:column; gap:1.5rem}
+  .mobile-drawer a{
+    color:#fff; font-size:1.2rem; font-weight:500;
+    display:block; padding:.5rem 0;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .mobile-drawer a:hover{color:var(--turquoise)}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; height:100vh; min-height:640px;
+    overflow:hidden; background:var(--ocean);
+    display:flex; align-items:center; justify-content:center;
+    text-align:center; color:#fff;
+  }
+  #waveCanvas{
+    position:absolute; inset:0; width:100%; height:100%; z-index:1;
+  }
+  .hero::before{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 40%, rgba(0,194,199,.25), transparent 60%);
+    z-index:2; pointer-events:none;
+  }
+  .hero-content{
+    position:relative; z-index:3; padding:0 1.5rem;
+    animation:fadeUp 1.2s ease .4s backwards;
+  }
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(40px)}
+    to{opacity:1; transform:translateY(0)}
+  }
+  .hero h1{
+    font-family:'Playfair Display',serif;
+    font-size:clamp(3rem,9vw,7rem); font-weight:700;
+    line-height:1; letter-spacing:-.02em;
+    margin-bottom:.5rem;
+  }
+  .hero h1 .amp{color:var(--turquoise); font-style:italic}
+  .hero-underline{
+    margin:.5rem auto 1.5rem; width:220px; height:18px; display:block;
+  }
+  .hero-underline path{stroke:var(--coral); stroke-width:2.5; fill:none}
+  .tagline{
+    font-family:'Space Mono',monospace;
+    letter-spacing:.4em; text-transform:uppercase;
+    font-size:.85rem; color:var(--turquoise);
+    margin-bottom:2.5rem;
+  }
+  .hero-ctas{
+    display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;
+  }
+  .btn{
+    position:relative; overflow:hidden;
+    padding:1rem 2.2rem; font-weight:600; font-size:.95rem;
+    border-radius:50px; transition:transform .25s ease, box-shadow .25s, background .25s;
+    letter-spacing:.02em;
+    display:inline-flex; align-items:center; gap:.5rem;
+  }
+  .btn-coral{
+    background:var(--coral); color:#fff;
+    box-shadow:0 10px 30px -8px rgba(255,107,74,.6);
+  }
+  .btn-coral:hover{transform:translateY(-3px); box-shadow:0 15px 40px -8px rgba(255,107,74,.7)}
+  .btn-outline-turq{
+    background:transparent; color:var(--turquoise);
+    border:2px solid var(--turquoise);
+  }
+  .btn-outline-turq:hover{background:var(--turquoise); color:var(--ocean); transform:translateY(-3px)}
+  .btn-turq{background:var(--turquoise); color:var(--ocean); box-shadow:0 10px 30px -8px rgba(0,194,199,.5)}
+  .btn-turq:hover{transform:translateY(-3px)}
+
+  .ripple{position:absolute; border-radius:50%; background:rgba(255,255,255,.4); transform:scale(0); animation:ripple .6s linear; pointer-events:none}
+  @keyframes ripple{to{transform:scale(4); opacity:0}}
+
+  .scroll-indicator{
+    position:absolute; bottom:30px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,.6); font-family:'Space Mono',monospace;
+    font-size:.7rem; letter-spacing:.3em; z-index:3;
+    animation:bounce 2.5s infinite;
+  }
+  @keyframes bounce{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-10px)}}
+
+  /* ---------- SECTION COMMON ---------- */
+  section{position:relative}
+  .container{max-width:1200px; margin:0 auto; padding:0 2rem}
+  .section-pad{padding:7rem 0}
+  .section-label{
+    font-family:'Space Mono',monospace; text-transform:uppercase;
+    letter-spacing:.3em; font-size:.75rem; color:var(--turquoise);
+    margin-bottom:1rem; display:block;
+  }
+  .section-title{
+    font-family:'Playfair Display',serif; font-weight:700;
+    font-size:clamp(2.2rem,5vw,3.6rem); line-height:1.1;
+    margin-bottom:1rem; letter-spacing:-.01em;
+  }
+  .section-title .deco{
+    display:inline-block; position:relative;
+  }
+  .deco-wave{
+    display:block; margin-top:.3rem; width:120px; height:14px;
+  }
+  .deco-wave path{stroke:var(--coral); stroke-width:3; fill:none}
+  .section-sub{color:var(--muted); font-size:1.05rem; max-width:600px; margin-bottom:3rem}
+
+  .reveal{opacity:0; transform:translateY(40px); transition:opacity .8s ease, transform .8s ease}
+  .reveal.in{opacity:1; transform:translateY(0)}
+
+  /* ---------- ABOUT ---------- */
+  .about{
+    background:var(--sand); position:relative;
+    clip-path: polygon(0 8%, 100% 0, 100% 92%, 0 100%);
+    margin-top:-4rem; padding:11rem 0 12rem;
+    overflow:hidden;
+  }
+  .about::before{
+    content:''; position:absolute; right:-150px; top:50%;
+    width:500px; height:500px; border-radius:50%;
+    background:radial-gradient(circle, rgba(0,194,199,.15), transparent 70%);
+    transform:translateY(-50%);
+  }
+  .about-grid{
+    display:grid; grid-template-columns:1fr 1.4fr; gap:4rem; align-items:center;
+  }
+  .about-photo{
+    position:relative; aspect-ratio:1; border-radius:50%;
+    overflow:hidden; box-shadow:var(--shadow);
+    display:flex; align-items:center; justify-content:center;
+    border:4px solid rgba(0,194,199,.3);
+  }
+  .about-photo img{
+    width:100%; height:100%; object-fit:cover;
+  }
+  .about-photo::after{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.1), transparent 50%);
+  }
+  .about-photo .photo-tag{
+    position:absolute; bottom:8%; left:50%; transform:translateX(-50%);
+    background:var(--coral); color:#fff; padding:.5rem 1.2rem;
+    border-radius:50px; font-family:'Space Mono',monospace;
+    font-size:.7rem; letter-spacing:.2em; text-transform:uppercase;
+    z-index:2;
+  }
+  .about p{color:#4a3a25; font-size:1.05rem; margin-bottom:2rem}
+  .badges{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;
+  }
+  .badge{
+    background:#fff; padding:1.5rem 1rem; border-radius:20px;
+    text-align:center; box-shadow:var(--shadow-soft);
+    transition:transform .3s;
+  }
+  .badge:hover{transform:translateY(-5px)}
+  .badge-icon{
+    width:48px; height:48px; margin:0 auto .7rem; border-radius:14px;
+    overflow:hidden; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, var(--turquoise), var(--ocean));
+  }
+  .badge-icon img{ width:100%; height:100%; object-fit:cover }
+  .badge-icon-svg{
+    width:48px; height:48px; margin:0 auto .7rem; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, var(--turquoise), var(--ocean));
+  }
+  .badge-icon-svg svg{ width:26px; height:26px; fill:#fff }
+  .badge-num{
+    font-family:'Playfair Display',serif; font-weight:700;
+    font-size:1.8rem; color:var(--ocean); display:block; line-height:1;
+  }
+  .badge-label{font-size:.8rem; color:var(--muted); margin-top:.3rem; display:block}
+
+  /* ---------- EQUIPMENT ---------- */
+  .equipment{background:var(--seafoam); padding-top:4rem}
+  .filter-tabs{
+    display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:2.5rem;
+  }
+  .filter-tab{
+    padding:.6rem 1.4rem; border-radius:50px;
+    background:#fff; color:var(--ocean); font-weight:500;
+    font-size:.9rem; transition:all .25s; border:1.5px solid transparent;
+  }
+  .filter-tab.active{background:var(--ocean); color:#fff}
+  .filter-tab:hover:not(.active){border-color:var(--turquoise); color:var(--turquoise)}
+
+  .equip-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1.8rem;
+  }
+  .equip-card{
+    background:#fff; border-radius:24px; overflow:hidden;
+    text-align:center; transition:all .35s ease;
+    border:2px solid transparent; position:relative;
+  }
+  .equip-card::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background:linear-gradient(90deg, var(--turquoise), var(--coral));
+    transform:scaleX(0); transform-origin:left; transition:transform .4s;
+    z-index:2;
+  }
+  .equip-card:hover{
+    transform:translateY(-8px); border-color:rgba(0,194,199,.3);
+    box-shadow:0 30px 60px -20px rgba(0,194,199,.3);
+  }
+  .equip-card:hover::before{transform:scaleX(1)}
+  .equip-img-wrap{
+    width:100%; height:180px; overflow:hidden; position:relative;
+  }
+  .equip-img-wrap img{
+    width:100%; height:100%; object-fit:cover;
+    transition:transform .5s ease;
+  }
+  .equip-card:hover .equip-img-wrap img{ transform:scale(1.08) }
+  .equip-card-body{ padding:1.5rem }
+  .equip-name{
+    font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:600;
+    margin-bottom:.4rem;
+  }
+  .equip-price{
+    font-family:'Space Mono',monospace; color:var(--coral);
+    font-size:1.05rem; font-weight:700; margin-bottom:.8rem;
+  }
+  .equip-badge{
+    display:inline-block; padding:.3rem .9rem; border-radius:50px;
+    font-size:.75rem; font-weight:600; margin-bottom:1rem;
+    font-family:'Space Mono',monospace;
+  }
+  .badge-disp{background:#e6f7eb; color:#1a8546}
+  .badge-cons{background:#ffe6df; color:var(--coral)}
+  .equip-card .btn{padding:.7rem 1.5rem; font-size:.85rem; width:100%; justify-content:center}
+
+  /* ---------- BOOKING ---------- */
+  .booking{
+    background:var(--ocean); color:#fff;
+    position:relative; overflow:hidden;
+    clip-path:polygon(0 5%, 100% 0, 100% 100%, 0 95%);
+    padding:10rem 0;
+  }
+  .booking::before{
+    content:''; position:absolute; left:-100px; bottom:-100px;
+    width:400px; height:400px; border-radius:50%;
+    background:radial-gradient(circle, rgba(0,194,199,.2), transparent 70%);
+  }
+  .booking .section-title{color:#fff}
+  .booking .section-sub{color:rgba(255,255,255,.7)}
+  .booking-grid{display:grid; grid-template-columns:1fr 1.3fr; gap:4rem; align-items:start; position:relative; z-index:2}
+  .booking-form{
+    background:rgba(255,255,255,.05); backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:24px; padding:2.5rem;
+  }
+  .form-row{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem}
+  .form-group{margin-bottom:1rem}
+  .form-group label{
+    display:block; font-size:.8rem; margin-bottom:.4rem;
+    font-family:'Space Mono',monospace; text-transform:uppercase;
+    letter-spacing:.15em; color:var(--turquoise);
+  }
+  .form-group input, .form-group select, .form-group textarea{
+    width:100%; padding:.9rem 1rem; border-radius:12px;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+    color:#fff; font-family:inherit; font-size:.95rem;
+    transition:border-color .2s, background .2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus{
+    outline:none; border-color:var(--turquoise); background:rgba(255,255,255,.12);
+  }
+  .form-group input::placeholder, .form-group textarea::placeholder{color:rgba(255,255,255,.4)}
+  .form-group input.error, .form-group select.error{border-color:var(--coral)}
+  .form-group select option{background:var(--ocean); color:#fff}
+  .radio-group{display:flex; gap:1.5rem; align-items:center; padding:.5rem 0}
+  .radio-group input[type=radio]{accent-color:var(--turquoise); width:16px; height:16px}
+  .radio-group label{font-size:.9rem; color:#fff; text-transform:none; letter-spacing:0; margin-bottom:0}
+
+  /* ---------- CLASSES ---------- */
+  .classes{background:var(--seafoam)}
+  .classes-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:2rem; margin-bottom:4rem;
+  }
+  .class-card{
+    background:#fff; border-radius:24px; padding:2.5rem;
+    position:relative; overflow:hidden;
+    box-shadow:var(--shadow-soft); transition:transform .3s;
+  }
+  .class-card:hover{transform:translateY(-6px)}
+  .class-card.featured{
+    background:var(--ocean); color:#fff;
+    box-shadow:0 30px 60px -20px rgba(10,35,66,.5);
+  }
+  .class-tag{
+    display:inline-block; background:var(--coral); color:#fff;
+    padding:.3rem .9rem; border-radius:50px; font-size:.75rem; font-weight:700;
+    font-family:'Space Mono',monospace; margin-bottom:1rem;
+  }
+  .class-name{
+    font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700;
+    margin-bottom:.4rem;
+  }
+  .class-meta{font-size:.88rem; color:var(--muted); margin-bottom:1.2rem}
+  .class-card.featured .class-meta{color:rgba(255,255,255,.7)}
+  .class-price{
+    font-family:'Playfair Display',serif; font-size:2.5rem; font-weight:700;
+    color:var(--turquoise); margin-bottom:1.5rem; line-height:1;
+  }
+  .class-price small{font-size:1rem; font-weight:400; opacity:.7}
+  .class-card ul{list-style:none; margin-bottom:2rem}
+  .class-card ul li{
+    padding:.5rem 0; border-bottom:1px solid rgba(0,0,0,.06);
+    font-size:.92rem; display:flex; align-items:center; gap:.6rem;
+  }
+  .class-card.featured ul li{border-color:rgba(255,255,255,.1)}
+  .class-card ul li::before{
+    content:''; width:6px; height:6px; border-radius:50%;
+    background:var(--turquoise); flex-shrink:0;
+  }
+
+  /* ---------- LEVELS ---------- */
+  .levels{margin-top:5rem}
+  .levels h3{
+    font-family:'Playfair Display',serif; font-size:2.2rem;
+    margin-bottom:3.5rem; text-align:center; color: var(--ocean);
+  }
+  .stepper{
+    display:flex; gap:2rem; position:relative;
+    counter-reset:step;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .stepper::after{
+    content:''; position:absolute; top:40px; left:15%; right:15%; height:2px;
+    background: linear-gradient(90deg, transparent, var(--turquoise), var(--coral), transparent);
+    z-index:0;
+  }
+  .step{
+    flex:1; text-align:center; position:relative; z-index:1; padding-top:100px;
+    transition: transform 0.3s ease;
+  }
+  .step:hover{ transform: translateY(-8px); }
+  .step::before{
+    counter-increment:step;
+    content:counter(step);
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:80px; height:80px; border-radius:50%;
+    background:linear-gradient(135deg, var(--turquoise), var(--ocean));
+    color:#fff; font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 12px 35px rgba(0,194,199,.4);
+    border: 5px solid var(--seafoam);
+    z-index: 2;
+  }
+  .step h4{font-family:'Playfair Display',serif; font-size:1.4rem; margin-bottom:.8rem; color: var(--ocean); font-weight: 700;}
+  .step p{color:var(--muted); font-size:0.95rem; max-width:240px; margin:0 auto; line-height: 1.5;}
+
+  /* ---------- AGENDA ---------- */
+  .agenda{
+    background:var(--sand);
+    clip-path:polygon(0 5%, 100% 0, 100% 95%, 0 100%);
+    padding:10rem 0;
+  }
+  .calendar{overflow-x:auto; padding-bottom:1rem}
+  .calendar-grid{
+    display:grid; grid-template-columns:80px repeat(7,1fr);
+    gap:.5rem; min-width:700px;
+  }
+  .cal-head{
+    font-family:'Space Mono',monospace; font-size:.72rem;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--muted);
+    padding:.5rem; text-align:center;
+  }
+  .cal-time{
+    font-family:'Space Mono',monospace; font-size:.75rem;
+    color:var(--ocean); padding:.5rem; display:flex; align-items:center;
+    font-weight:700;
+  }
+  .cal-slot{
+    border-radius:10px; padding:.6rem .3rem; font-size:.75rem;
+    font-weight:600; text-align:center; transition:all .2s;
+    font-family:'Space Mono',monospace; cursor:pointer;
+  }
+  .cal-slot.free{background:#e6f7eb; color:#1a8546}
+  .cal-slot.free:hover{background:#1a8546; color:#fff; transform:scale(1.05)}
+  .cal-slot.medium{background:#fff3e0; color:#e07a00}
+  .cal-slot.medium:hover{background:#e07a00; color:#fff; transform:scale(1.05)}
+  .cal-slot.full{background:#ffe6df; color:var(--coral); cursor:not-allowed; opacity:.7}
+
+  /* ---------- MODAL ---------- */
+  .modal-back{
+    position:fixed; inset:0; background:rgba(10,35,66,.7);
+    z-index:2000; display:none; align-items:center; justify-content:center;
+    padding:1rem; backdrop-filter:blur(4px);
+  }
+  .modal-back.open{display:flex}
+  .modal{
+    background:#fff; border-radius:24px; padding:2.5rem;
+    width:min(480px,95vw); position:relative; animation:slideUp .35s;
+  }
+  @keyframes slideUp{from{transform:translateY(30px); opacity:0}to{transform:translateY(0);opacity:1}}
+  .modal-close{
+    position:absolute; top:1rem; right:1rem; width:36px; height:36px;
+    border-radius:50%; background:var(--seafoam); font-size:1.2rem; color:var(--ocean);
+  }
+  .modal h3{font-family:'Playfair Display',serif; font-size:1.6rem; margin-bottom:.3rem}
+  .modal p{color:var(--muted); margin-bottom:1.5rem; font-size:.9rem}
+  .modal .form-group label{color:var(--ocean)}
+  .modal .form-group input, .modal .form-group select{
+    background:var(--seafoam); border-color:transparent; color:var(--ink);
+  }
+  .modal .form-group input::placeholder{color:#a0aab8}
+
+  /* ---------- GALLERY ---------- */
+  .gallery{background:var(--seafoam); padding:7rem 0}
+  .masonry{
+    columns:3; column-gap:1rem;
+  }
+  .gal-item{
+    break-inside:avoid; margin-bottom:1rem; border-radius:18px;
+    overflow:hidden; position:relative; cursor:pointer;
+    transition:transform .3s;
+  }
+  .gal-item:hover{transform:scale(.98)}
+  .gal-img{
+    width:100%; display:block; position:relative;
+  }
+  .gal-img img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform .5s ease;
+  }
+  .gal-item:hover .gal-img img{ transform:scale(1.05) }
+  .gal-overlay{
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(10,35,66,.85) 0%, transparent 60%);
+    display:flex; align-items:flex-end; padding:1.2rem;
+    opacity:0; transition:opacity .3s;
+  }
+  .gal-item:hover .gal-overlay{opacity:1}
+  .gal-caption{
+    color:#fff; font-family:'Space Mono',monospace;
+    font-size:.8rem; letter-spacing:.1em;
+  }
+  .gal-cta{text-align:center; margin-top:2.5rem}
+
+  .lightbox{
+    position:fixed; inset:0; background:rgba(10,35,66,.97);
+    z-index:2000; display:none; align-items:center; justify-content:center;
+    padding:2rem;
+  }
+  .lightbox.open{display:flex}
+  .lightbox-content{
+    width:min(800px,90vw); max-height:85vh; border-radius:20px;
+    overflow:hidden; position:relative;
+  }
+  .lightbox-content img{
+    width:100%; height:100%; object-fit:contain; max-height:80vh;
+  }
+  .lightbox-close{
+    position:absolute; top:-50px; right:0; color:#fff; font-size:2rem;
+  }
+  .lightbox-cap{
+    position:absolute; bottom:-40px; left:0; right:0; text-align:center;
+    color:#fff; font-family:'Space Mono',monospace;
+  }
+
+  /* ---------- WEATHER ---------- */
+  .weather{
+    background:linear-gradient(135deg, var(--ocean) 0%, #143b6e 100%);
+    color:#fff; padding:7rem 0;
+  }
+  .weather .section-title{color:#fff}
+  .weather-now{
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(10px);
+    border-radius:28px; padding:2.5rem; margin-bottom:2rem;
+    display:grid; grid-template-columns:auto 1fr auto; gap:2rem; align-items:center;
+  }
+  .weather-icon{
+    width:80px; height:80px; display:flex; align-items:center; justify-content:center;
+    font-size:3.5rem; line-height:1;
+  }
+  .weather-temp{font-family:'Playfair Display',serif; font-size:4rem; font-weight:700; line-height:1}
+  .weather-loc{font-family:'Space Mono',monospace; font-size:.8rem; color:var(--turquoise); letter-spacing:.2em; text-transform:uppercase; margin-bottom:.5rem}
+  .weather-stats{display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:.8rem}
+  .wstat{font-size:.9rem; opacity:.85}
+  .wstat strong{display:block; font-family:'Playfair Display',serif; font-size:1.4rem; color:var(--turquoise)}
+  .surf-rating{
+    background:var(--coral); color:#fff; padding:1.2rem 1.5rem; border-radius:18px;
+    text-align:center; min-width:140px;
+  }
+  .surf-rating .rate-label{font-family:'Space Mono',monospace; font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; opacity:.9}
+  .surf-rating .rate-val{font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; margin-top:.3rem}
+
+  .forecast{
+    display:flex; gap:1rem; overflow-x:auto; padding-bottom:1rem; scroll-behavior:smooth;
+  }
+  .forecast::-webkit-scrollbar{height:6px}
+  .forecast::-webkit-scrollbar-thumb{background:var(--turquoise); border-radius:10px}
+  .fcard{
+    flex:0 0 160px;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+    border-radius:18px; padding:1.5rem 1rem; text-align:center;
+    transition:transform .3s, background .3s;
+  }
+  .fcard:hover{transform:translateY(-5px); background:rgba(0,194,199,.15)}
+  .fday{font-family:'Space Mono',monospace; font-size:.75rem; letter-spacing:.2em; text-transform:uppercase; color:var(--turquoise); margin-bottom:.5rem}
+  .ficon{font-size:2.5rem; margin:.5rem 0}
+  .ftemp{font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:600}
+  .fmeta{font-size:.75rem; opacity:.7; margin-top:.5rem}
+
+  /* ---------- LOCATION ---------- */
+  .location{background:var(--sand); padding:7rem 0}
+  .loc-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:3rem}
+  .map-wrap{
+    border-radius:24px; overflow:hidden; box-shadow:var(--shadow);
+    aspect-ratio:4/3; background:var(--ocean);
+  }
+  .map-wrap iframe{width:100%; height:100%; border:0; display:block}
+  .contact-cards{display:grid; gap:1rem}
+  .ccard{
+    background:#fff; padding:1.5rem; border-radius:18px;
+    display:flex; gap:1rem; align-items:center; transition:transform .25s;
+    box-shadow:var(--shadow-soft);
+  }
+  .ccard:hover{transform:translateX(5px)}
+  .ccard-icon{
+    width:50px; height:50px; border-radius:14px;
+    background:linear-gradient(135deg, var(--turquoise), var(--ocean));
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; overflow:hidden;
+  }
+  .ccard-icon svg{ width:24px; height:24px; fill:#fff }
+  .ccard h4{font-family:'Playfair Display',serif; font-size:1.05rem; margin-bottom:.2rem}
+  .ccard p{color:var(--muted); font-size:.88rem}
+  .socials{display:flex; gap:.7rem; margin-top:1rem}
+  .soc{
+    width:46px; height:46px; border-radius:14px;
+    background:var(--ocean); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .25s;
+  }
+  .soc:hover{background:var(--coral); transform:translateY(-3px)}
+  .soc svg{width:20px; height:20px; fill:currentColor}
+
+  /* ---------- FOOTER ---------- */
+  .footer-wave{display:block; width:100%; height:80px}
+  .footer{
+    background:var(--ocean); color:#fff;
+    padding:4rem 0 2rem;
+  }
+  .footer-grid{
+    display:grid; grid-template-columns:2fr 1fr 1fr; gap:3rem; margin-bottom:3rem;
+  }
+  .foot-logo{
+    font-family:'Playfair Display',serif; font-weight:700;
+    font-size:1.8rem; margin-bottom:.5rem;
+  }
+  .foot-logo span{color:var(--turquoise)}
+  .footer p{opacity:.7; font-size:.92rem; max-width:300px}
+  .footer h5{
+    font-family:'Space Mono',monospace; font-size:.8rem;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--turquoise);
+    margin-bottom:1rem;
+  }
+  .footer ul{list-style:none}
+  .footer ul li{margin-bottom:.6rem}
+  .footer ul a{font-size:.92rem; opacity:.8; transition:opacity .2s, color .2s}
+  .footer ul a:hover{opacity:1; color:var(--turquoise)}
+  .footer-bottom{
+    text-align:center; padding-top:2rem; border-top:1px solid rgba(255,255,255,.1);
+    font-size:.85rem; opacity:.6;
+  }
+
+  /* ---------- WHATSAPP FAB ---------- */
+  .wa-fab{
+    position:fixed; bottom:24px; right:24px; z-index:998;
+    width:62px; height:62px; border-radius:50%;
+    background:#25d366; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 30px rgba(37,211,102,.5);
+    animation:waPulse 4s ease-in-out infinite;
+    transition:transform .25s;
+  }
+  .wa-fab:hover{transform:scale(1.1)}
+  .wa-fab svg{width:32px; height:32px; fill:currentColor}
+  @keyframes waPulse{
+    0%,100%{box-shadow:0 10px 30px rgba(37,211,102,.5), 0 0 0 0 rgba(37,211,102,.5)}
+    50%{box-shadow:0 10px 30px rgba(37,211,102,.5), 0 0 0 20px rgba(37,211,102,0)}
+  }
+
+  /* ---------- BACK TO TOP ---------- */
+  .top-btn{
+    position:fixed; bottom:24px; left:24px; z-index:998;
+    width:48px; height:48px; border-radius:50%;
+    background:var(--ocean); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden; transition:all .3s;
+    box-shadow:var(--shadow-soft);
+  }
+  .top-btn.show{opacity:1; visibility:visible}
+  .top-btn:hover{background:var(--coral); transform:translateY(-3px)}
+
+  /* ========== LOGIN MODAL ========== */
+  .login-modal-back{
+    position:fixed; inset:0; background:rgba(10,35,66,.75);
+    z-index:3000; display:none; align-items:center; justify-content:center;
+    padding:1rem; backdrop-filter:blur(6px);
+  }
+  .login-modal-back.open{display:flex}
+  .login-modal{
+    background:#fff; border-radius:28px; width:min(460px,95vw);
+    overflow:hidden; animation:slideUp .35s; position:relative;
+  }
+  .login-modal-header{
+    background:linear-gradient(135deg, var(--ocean), #143b6e);
+    padding:2.5rem 2.5rem 2rem; text-align:center; position:relative;
+  }
+  .login-modal-header h2{
+    font-family:'Playfair Display',serif; color:#fff; font-size:1.8rem; margin-bottom:.3rem;
+  }
+  .login-modal-header p{ color:rgba(255,255,255,.7); font-size:.9rem }
+  .login-modal-header .wave-deco{
+    position:absolute; bottom:-1px; left:0; right:0;
+  }
+  .login-modal-body{ padding:2rem 2.5rem 2.5rem }
+  .login-tabs{
+    display:flex; background:var(--seafoam); border-radius:12px;
+    padding:.3rem; margin-bottom:1.5rem; gap:.3rem;
+  }
+  .login-tab{
+    flex:1; padding:.6rem; border-radius:9px; font-size:.88rem; font-weight:600;
+    color:var(--muted); transition:all .25s; text-align:center;
+  }
+  .login-tab.active{background:#fff; color:var(--ocean); box-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .login-form{ display:none }
+  .login-form.active{ display:block }
+  .login-form .form-group label{ color:var(--ocean) }
+  .login-form .form-group input{
+    background:var(--seafoam); border:1.5px solid #e0e8f0; color:var(--ink);
+    border-radius:12px;
+  }
+  .login-form .form-group input:focus{
+    border-color:var(--turquoise); background:#fff;
+    box-shadow:0 0 0 3px rgba(0,194,199,.1);
+  }
+  .login-form .form-group input::placeholder{ color:#a0aab8 }
+  .login-close{
+    position:absolute; top:1rem; right:1rem; width:34px; height:34px;
+    border-radius:50%; background:rgba(255,255,255,.15); color:#fff;
+    font-size:1.1rem; display:flex; align-items:center; justify-content:center;
+  }
+  .login-close:hover{ background:rgba(255,255,255,.3) }
+  .login-divider{
+    text-align:center; color:var(--muted); font-size:.82rem;
+    margin:1rem 0; position:relative;
+  }
+  .login-divider::before, .login-divider::after{
+    content:''; position:absolute; top:50%; width:40%; height:1px; background:#e0e8f0;
+  }
+  .login-divider::before{left:0}
+  .login-divider::after{right:0}
+  .login-error{
+    background:#ffe6df; color:var(--coral); padding:.7rem 1rem;
+    border-radius:10px; font-size:.85rem; margin-bottom:1rem; display:none;
+  }
+  .login-success{
+    background:#e6f7eb; color:#1a8546; padding:.7rem 1rem;
+    border-radius:10px; font-size:.85rem; margin-bottom:1rem; display:none;
+  }
+
+  /* ========== PROFILE PAGE ========== */
+  .profile-page{
+    position:fixed; inset:0; background:var(--seafoam);
+    z-index:2500; overflow-y:auto; display:none;
+    animation:fadeIn .3s ease;
+  }
+  .profile-page.open{ display:block }
+  @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+  .profile-header{
+    background:linear-gradient(135deg, var(--ocean) 0%, #143b6e 100%);
+    padding:5rem 0 4rem; position:relative; overflow:hidden;
+  }
+  .profile-header::before{
+    content:''; position:absolute; right:-100px; top:-100px;
+    width:400px; height:400px; border-radius:50%;
+    background:radial-gradient(circle, rgba(0,194,199,.2), transparent 70%);
+  }
+  .profile-header-inner{
+    max-width:900px; margin:0 auto; padding:0 2rem;
+    display:flex; align-items:center; gap:2.5rem; position:relative; z-index:2;
+  }
+  .profile-avatar-big{
+    width:100px; height:100px; border-radius:50%;
+    background:linear-gradient(135deg, var(--turquoise), var(--coral));
+    display:flex; align-items:center; justify-content:center;
+    font-size:2.5rem; font-weight:700; color:#fff; flex-shrink:0;
+    border:4px solid rgba(255,255,255,.3);
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+  }
+  .profile-info h1{
+    font-family:'Playfair Display',serif; color:#fff; font-size:2rem; margin-bottom:.3rem;
+  }
+  .profile-info p{ color:rgba(255,255,255,.7); font-size:.9rem; margin-bottom:.8rem }
+  .profile-badges-row{
+    display:flex; gap:.6rem; flex-wrap:wrap;
+  }
+  .profile-badge-pill{
+    background:rgba(255,255,255,.15); color:#fff; padding:.3rem .8rem;
+    border-radius:50px; font-size:.78rem; font-family:'Space Mono',monospace;
+    letter-spacing:.1em;
+  }
+  .profile-close-btn{
+    position:fixed; top:1.5rem; right:1.5rem; z-index:10;
+    width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,.15); color:#fff; font-size:1.3rem;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .2s;
+  }
+  .profile-close-btn:hover{ background:var(--coral) }
+  .profile-body{
+    max-width:900px; margin:0 auto; padding:3rem 2rem;
+  }
+  .profile-section{
+    background:#fff; border-radius:20px; padding:2rem;
+    margin-bottom:1.5rem; box-shadow:var(--shadow-soft);
+  }
+  .profile-section h3{
+    font-family:'Playfair Display',serif; font-size:1.3rem;
+    margin-bottom:1.5rem; display:flex; align-items:center; gap:.6rem;
+    color:var(--ocean);
+  }
+  .profile-section h3 svg{ width:20px; height:20px; fill:var(--turquoise) }
+  
+  /* Admin Tabs */
+  .admin-tabs{
+    display:flex; gap:1rem; margin-bottom:2rem; border-bottom:2px solid var(--seafoam);
+    padding-bottom:1rem; overflow-x:auto;
+  }
+  .admin-tab{
+    padding:.8rem 1.5rem; border-radius:12px; font-weight:600; font-size:.9rem;
+    color:var(--muted); cursor:pointer; transition:all .3s; white-space:nowrap;
+  }
+  .admin-tab.active{ background:var(--ocean); color:#fff; }
+  .admin-content-section{ display:none }
+  .admin-content-section.active{ display:block }
+
+  .profile-stats-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;
+  }
+  .profile-stat.admin-stat{ background:var(--ocean); color:#fff; }
+  .profile-stat.admin-stat .profile-stat-num{ color:var(--turquoise); }
+  .profile-stat.admin-stat .profile-stat-label{ color:rgba(255,255,255,.7); }
+
+  /* Admin Tables/Lists */
+  .admin-list{ display:flex; flex-direction:column; gap:1rem; }
+  .admin-item{
+    background:var(--seafoam); padding:1.2rem; border-radius:16px;
+    display:flex; align-items:center; gap:1.5rem; border:1px solid #e0e8f0;
+  }
+  .admin-item-info{ flex:1; }
+  .admin-item-info strong{ display:block; font-size:1rem; color:var(--ocean); }
+  .admin-item-info span{ font-size:.85rem; color:var(--muted); }
+  .admin-actions{ display:flex; gap:.5rem; }
+  .btn-action{
+    width:36px; height:36px; border-radius:10px; display:flex; align-items:center;
+    justify-content:center; border:none; cursor:pointer; transition:all .2s;
+  }
+  .btn-approve{ background:#e6f7eb; color:#1a8546; }
+  .btn-approve:hover{ background:#1a8546; color:#fff; }
+  .btn-reject{ background:#ffe6df; color:var(--coral); }
+  .btn-reject:hover{ background:var(--coral); color:#fff; }
+  .btn-action svg{ width:18px; height:18px; fill:currentColor; }
+  .profile-stat{
+    background:var(--seafoam); border-radius:14px; padding:1.2rem;
+    text-align:center;
+  }
+  .profile-stat-num{
+    font-family:'Playfair Display',serif; font-size:2rem; font-weight:700;
+    color:var(--ocean); display:block;
+  }
+  .profile-stat-label{ font-size:.8rem; color:var(--muted) }
+  .aulas-list{ display:flex; flex-direction:column; gap:.8rem }
+  .aula-item{
+    display:flex; align-items:center; gap:1rem;
+    padding:1rem; background:var(--seafoam); border-radius:12px;
+    transition:background .2s;
+  }
+  .aula-item:hover{ background:#eef5f5 }
+  .aula-icon{
+    width:44px; height:44px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .aula-icon.surf{ background:linear-gradient(135deg, var(--turquoise), var(--ocean)) }
+  .aula-icon.sup{ background:linear-gradient(135deg, #00a8b5, #0A2342) }
+  .aula-icon.kayak{ background:linear-gradient(135deg, var(--coral), #c0392b) }
+  .aula-icon svg{ width:22px; height:22px; fill:#fff }
+  .aula-info{ flex:1 }
+  .aula-info strong{ display:block; font-size:.95rem; color:var(--ink) }
+  .aula-info span{ font-size:.82rem; color:var(--muted) }
+  .aula-status{
+    padding:.3rem .8rem; border-radius:50px; font-size:.75rem; font-weight:600;
+    font-family:'Space Mono',monospace;
+  }
+  .aula-status.concluida{ background:#e6f7eb; color:#1a8546 }
+  .aula-status.agendada{ background:#fff3e0; color:#e07a00 }
+  .reservas-list{ display:flex; flex-direction:column; gap:.8rem }
+  .reserva-item{
+    display:flex; align-items:center; gap:1rem;
+    padding:1rem; background:var(--seafoam); border-radius:12px;
+  }
+  .reserva-img{
+    width:60px; height:60px; border-radius:10px; object-fit:cover; flex-shrink:0;
+  }
+  .reserva-info{ flex:1 }
+  .reserva-info strong{ display:block; font-size:.95rem; color:var(--ink) }
+  .reserva-info span{ font-size:.82rem; color:var(--muted) }
+  .profile-form-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:1rem;
+  }
+  .profile-form-grid .form-group label{ color:var(--ocean) }
+  .profile-form-grid .form-group input{
+    background:var(--seafoam); border:1.5px solid #e0e8f0; color:var(--ink);
+    border-radius:12px;
+  }
+  .profile-form-grid .form-group input:focus{
+    border-color:var(--turquoise); background:#fff;
+    box-shadow:0 0 0 3px rgba(0,194,199,.1); outline:none;
+  }
+
+  /* ========== ACCESSIBILITY PANEL ========== */
+  .a11y-toggle{
+    position:fixed; left:0; top:50%; transform:translateY(-50%);
+    z-index:997; background:var(--ocean); color:#fff;
+    width:44px; height:120px; border-radius:0 16px 16px 0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:.4rem; cursor:pointer; transition:background .25s, width .25s;
+    box-shadow:4px 0 20px rgba(0,0,0,.2);
+  }
+  .a11y-toggle:hover{ background:var(--turquoise); width:50px }
+  .a11y-toggle svg{ width:22px; height:22px; fill:#fff }
+  .a11y-toggle span{
+    font-size:.55rem; font-family:'Space Mono',monospace;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff;
+    writing-mode:vertical-rl; text-orientation:mixed;
+  }
+
+  .a11y-panel{
+    position:fixed; left:-340px; top:0; bottom:0; width:320px;
+    background:#fff; z-index:996; overflow-y:auto;
+    box-shadow:4px 0 40px rgba(0,0,0,.15);
+    transition:left .4s cubic-bezier(.77,0,.18,1);
+    padding:0 0 2rem;
+  }
+  .a11y-panel.open{ left:0 }
+  .a11y-panel-header{
+    background:linear-gradient(135deg, var(--ocean), #143b6e);
+    padding:2rem 1.5rem 1.5rem;
+    position:sticky; top:0; z-index:2;
+  }
+  .a11y-panel-header h3{
+    font-family:'Playfair Display',serif; color:#fff; font-size:1.3rem; margin-bottom:.2rem;
+  }
+  .a11y-panel-header p{ color:rgba(255,255,255,.7); font-size:.8rem }
+  .a11y-close{
+    position:absolute; top:1rem; right:1rem;
+    width:30px; height:30px; border-radius:50%;
+    background:rgba(255,255,255,.15); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:1rem;
+  }
+  .a11y-close:hover{ background:var(--coral) }
+  .a11y-section{ padding:1.2rem 1.5rem; border-bottom:1px solid #f0f0f0 }
+  .a11y-section:last-child{ border-bottom:none }
+  .a11y-section h4{
+    font-size:.75rem; font-family:'Space Mono',monospace;
+    text-transform:uppercase; letter-spacing:.2em; color:var(--muted);
+    margin-bottom:1rem;
+  }
+  .a11y-btn-row{ display:flex; gap:.5rem; flex-wrap:wrap }
+  .a11y-btn{
+    padding:.5rem 1rem; border-radius:10px; font-size:.85rem; font-weight:600;
+    background:var(--seafoam); color:var(--ocean); border:1.5px solid #e0e8f0;
+    transition:all .2s; cursor:pointer;
+  }
+  .a11y-btn:hover{ border-color:var(--turquoise); color:var(--turquoise) }
+  .a11y-btn.active{ background:var(--ocean); color:#fff; border-color:var(--ocean) }
+  .a11y-toggle-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:.6rem 0;
+  }
+  .a11y-toggle-row span{ font-size:.9rem; color:var(--ink) }
+  .a11y-switch{
+    position:relative; width:46px; height:26px; cursor:pointer;
+  }
+  .a11y-switch input{ opacity:0; width:0; height:0 }
+  .a11y-switch-track{
+    position:absolute; inset:0; background:#ccc; border-radius:50px;
+    transition:background .2s;
+  }
+  .a11y-switch input:checked + .a11y-switch-track{ background:var(--turquoise) }
+  .a11y-switch-thumb{
+    position:absolute; top:3px; left:3px; width:20px; height:20px;
+    background:#fff; border-radius:50%; transition:transform .2s;
+    box-shadow:0 1px 4px rgba(0,0,0,.2);
+  }
+  .a11y-switch input:checked ~ .a11y-switch-thumb{ transform:translateX(20px) }
+  .a11y-reset{
+    width:100%; padding:.7rem; border-radius:12px; font-size:.88rem; font-weight:600;
+    background:var(--seafoam); color:var(--muted); border:1.5px solid #e0e8f0;
+    cursor:pointer; transition:all .2s; margin-top:.5rem;
+  }
+  .a11y-reset:hover{ background:var(--coral); color:#fff; border-color:var(--coral) }
+
+  /* Accessibility body classes */
+  body.a11y-large-text{ --font-size-base: 20px }
+  body.a11y-xl-text{ --font-size-base: 24px }
+  body.a11y-high-contrast{
+    --ocean:#000; --ink:#000; --muted:#333; --seafoam:#fff; --sand:#fffde7;
+    filter:contrast(1.4);
+  }
+  body.a11y-grayscale{ filter:grayscale(1) }
+  body.a11y-no-animations *{ animation:none !important; transition:none !important }
+  body.a11y-dyslexia{ font-family: Arial, sans-serif !important; --letter-spacing: 0.05em }
+  body.a11y-focus-visible *:focus{
+    outline:3px solid var(--coral) !important; outline-offset:3px !important;
+  }
+  body.a11y-line-height{ line-height:2 !important }
+  body.a11y-line-height p, body.a11y-line-height li{ line-height:2 !important }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1024px){
+    .nav-links{display:none}
+    .hamburger{display:block}
+    .equip-grid{grid-template-columns:repeat(2,1fr)}
+    .about-grid{grid-template-columns:1fr; gap:3rem}
+    .about-photo{max-width:300px; margin:0 auto}
+    .booking-grid{grid-template-columns:1fr; gap:3rem}
+    .classes-grid{grid-template-columns:1fr}
+    .loc-grid{grid-template-columns:1fr}
+    .masonry{columns:2}
+    .footer-grid{grid-template-columns:1fr 1fr; gap:2rem}
+    .profile-stats-grid{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width: 640px){
+    .navbar, .navbar.scrolled{padding:1rem 1.2rem}
+    .container{padding:0 1.2rem}
+    .section-pad{padding:5rem 0}
+    .equip-grid{grid-template-columns:1fr}
+    .form-row{grid-template-columns:1fr}
+    .badges{grid-template-columns:1fr; gap:.8rem}
+    .badge{display:flex; align-items:center; gap:1rem; text-align:left}
+    .badge-icon,.badge-icon-svg{margin-bottom:0}
+    .stepper{flex-direction:column; gap:3rem; align-items: center;}
+    .stepper::after{
+      left: 50%; top: 50px; bottom: 50px; width: 2px; height: auto;
+      background: linear-gradient(180deg, transparent, var(--turquoise), var(--coral), transparent);
+    }
+    .step{ padding-top: 90px; width: 100%; max-width: 300px; }
+    .step::before{ width: 70px; height: 70px; font-size: 1.8rem; }
+    .weather-now{grid-template-columns:1fr; text-align:center; gap:1rem}
+    .weather-stats{justify-content:center}
+    .masonry{columns:1}
+    .footer-grid{grid-template-columns:1fr}
+    .booking-form{padding:1.8rem}
+    .hero h1{font-size:3.8rem}
+    .wa-fab{width:56px; height:56px; bottom:18px; right:18px}
+    .wa-fab svg{width:28px; height:28px}
+    .top-btn{bottom:18px; left:18px}
+    .profile-header-inner{flex-direction:column; text-align:center}
+    .profile-stats-grid{grid-template-columns:1fr 1fr}
+    .profile-form-grid{grid-template-columns:1fr}
+    .a11y-panel{width:290px}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-wave">
+    <svg viewBox="0 0 120 60" preserveAspectRatio="none">
+      <path d="M0,30 Q15,5 30,30 T60,30 T90,30 T120,30"/>
+    </svg>
+    <div class="loader-text">Ondas & Cia</div>
+  </div>
+</div>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ACCESSIBILITY TOGGLE -->
+<button class="a11y-toggle" id="a11yToggle" aria-label="Abrir painel de acessibilidade">
+  <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm8 7h-5v13h-2v-6h-2v6H9V9H4V7h16v2z"/></svg>
+  <span>Acess.</span>
+</button>
+
+<!-- ACCESSIBILITY PANEL -->
+<aside class="a11y-panel" id="a11yPanel" aria-label="Painel de acessibilidade">
+  <div class="a11y-panel-header">
+    <button class="a11y-close" id="a11yClose" aria-label="Fechar painel">×</button>
+    <h3>Acessibilidade</h3>
+    <p>Personalize sua experiência de leitura</p>
+  </div>
+
+  <div class="a11y-section">
+    <h4>Tamanho do Texto</h4>
+    <div class="a11y-btn-row">
+      <button class="a11y-btn" data-a11y="font-normal" title="Texto normal">A</button>
+      <button class="a11y-btn" data-a11y="font-large" title="Texto grande" style="font-size:1.1rem">A+</button>
+      <button class="a11y-btn" data-a11y="font-xl" title="Texto muito grande" style="font-size:1.3rem">A++</button>
+    </div>
+  </div>
+
+  <div class="a11y-section">
+    <h4>Contraste & Cores</h4>
+    <div class="a11y-btn-row">
+      <button class="a11y-btn" data-a11y="contrast-normal">Normal</button>
+      <button class="a11y-btn" data-a11y="contrast-high">Alto contraste</button>
+      <button class="a11y-btn" data-a11y="grayscale">Escala de cinza</button>
+    </div>
+  </div>
+
+  <div class="a11y-section">
+    <h4>Opções de Leitura</h4>
+    <div class="a11y-toggle-row">
+      <span>Fonte para dislexia</span>
+      <label class="a11y-switch" aria-label="Ativar fonte para dislexia">
+        <input type="checkbox" id="a11yDyslexia">
+        <span class="a11y-switch-track"></span>
+        <span class="a11y-switch-thumb"></span>
+      </label>
+    </div>
+    <div class="a11y-toggle-row">
+      <span>Espaçamento de linhas</span>
+      <label class="a11y-switch" aria-label="Aumentar espaçamento de linhas">
+        <input type="checkbox" id="a11yLineHeight">
+        <span class="a11y-switch-track"></span>
+        <span class="a11y-switch-thumb"></span>
+      </label>
+    </div>
+    <div class="a11y-toggle-row">
+      <span>Destacar foco (teclado)</span>
+      <label class="a11y-switch" aria-label="Destacar elementos com foco">
+        <input type="checkbox" id="a11yFocus">
+        <span class="a11y-switch-track"></span>
+        <span class="a11y-switch-thumb"></span>
+      </label>
+    </div>
+    <div class="a11y-toggle-row">
+      <span>Reduzir animações</span>
+      <label class="a11y-switch" aria-label="Reduzir animações">
+        <input type="checkbox" id="a11yNoAnim">
+        <span class="a11y-switch-track"></span>
+        <span class="a11y-switch-thumb"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="a11y-section">
+    <button class="a11y-reset" id="a11yReset">Restaurar padrões</button>
+  </div>
+</aside>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar" aria-label="Navegação principal">
+  <a href="#hero" class="nav-logo">Ondas <span>&</span> Cia</a>
+  <ul class="nav-links">
+    <li><a href="#hero">Início</a></li>
+    <li><a href="#equipamentos">Equipamentos</a></li>
+    <li><a href="#aulas">Aulas</a></li>
+    <li><a href="#galeria">Galeria</a></li>
+    <li><a href="#previsao">Previsão</a></li>
+    <li><a href="#contato">Contato</a></li>
+    <li id="navLoginLi">
+      <button class="nav-login-btn" id="navLoginBtn" aria-label="Fazer login">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        Entrar
+      </button>
+    </li>
+    <li id="navUserLi" style="display:none">
+      <div class="nav-user-container">
+        <button class="btn-profile-direct" id="directProfileBtn">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          Perfil
+        </button>
+        <div class="nav-user" id="navUser">
+          <div class="nav-avatar" id="navAvatar">BR</div>
+          <span class="nav-user-name" id="navUserName">Bruno Nascimento</span>
+          <div class="nav-user-dropdown">
+            <button class="dd-logout" id="ddLogout">
+              <svg viewBox="0 0 24 24"><path d="M17 7l-1.4 1.4L18.2 11H9v2h9.2l-2.6 2.6L17 17l5-5-5-5zM5 5h7V3H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h7v-2H5V5z"/></svg>
+              Sair
+            </button>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE DRAWER -->
+<aside class="mobile-drawer" id="drawer" aria-hidden="true">
+  <ul>
+    <li><a href="#hero">Início</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#equipamentos">Equipamentos</a></li>
+    <li><a href="#reservas">Reservas</a></li>
+    <li><a href="#aulas">Aulas</a></li>
+    <li><a href="#agenda">Agenda</a></li>
+    <li><a href="#galeria">Galeria</a></li>
+    <li><a href="#previsao">Previsão</a></li>
+    <li><a href="#contato">Contato</a></li>
+    <li><a href="#" id="mobileLoginBtn">Entrar / Cadastrar</a></li>
+  </ul>
+</aside>
+
+<!-- HERO -->
+<header class="hero" id="hero">
+  <canvas id="waveCanvas" aria-hidden="true"></canvas>
+  <div class="hero-content">
+    <h1>Ondas <span class="amp">&</span> Cia</h1>
+    <svg class="hero-underline" viewBox="0 0 220 18" aria-hidden="true">
+      <path d="M5,9 Q30,-2 55,9 T105,9 T155,9 T215,9"/>
+    </svg>
+    <p class="tagline">Alugue · Aprenda · Surfe</p>
+    <div class="hero-ctas">
+      <a href="#reservas" class="btn btn-coral">Reservar Equipamento</a>
+      <a href="#aulas" class="btn btn-outline-turq">Agendar Aula</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">Bem-vindo!</div>
+</header>
+
+<!-- ABOUT -->
+<section class="about" id="sobre">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photo reveal">
+        <img src="imgs/surf-instructor.jpg" alt="Bruno Nascimento — Instrutor de Surf" loading="lazy">
+        <span class="photo-tag">Bruno · Instrutor</span>
+      </div>
+      <div class="reveal">
+        <span class="section-label">Sobre</span>
+        <h2 class="section-title">A praia é nossa <span class="deco">casa<svg class="deco-wave" viewBox="0 0 120 14"><path d="M2,7 Q20,-1 40,7 T80,7 T118,7"/></svg></span></h2>
+        <p>Sou Bruno Nascimento, surfista há mais de 20 anos e morador de Ubatuba desde criança. Comecei a Ondas & Cia para compartilhar o que o mar me ensinou: respeito, ritmo e alegria. Aqui você aluga seu equipamento, aprende com paciência ou simplesmente vive um dia inesquecível na praia.</p>
+        <div class="badges">
+          <div class="badge">
+            <div class="badge-icon-svg">
+              <svg viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
+            </div>
+            <span class="badge-num" data-count="500">0</span>
+            <span class="badge-label">alunos formados</span>
+          </div>
+          <div class="badge">
+            <div class="badge-icon-svg">
+              <svg viewBox="0 0 24 24"><path d="M17.5 12a5.5 5.5 0 0 1-5.5 5.5A5.5 5.5 0 0 1 6.5 12 5.5 5.5 0 0 1 12 6.5 5.5 5.5 0 0 1 17.5 12M2.2 14.2C2.7 16.3 3.7 18.2 5 19.8L6.4 18.4C5.3 17.1 4.5 15.5 4.2 13.8L2.2 14.2M5 4.2L3.6 5.6C5.2 7.2 6.2 9.1 6.7 11.2L8.7 10.8C8.1 8.3 6.8 6.1 5 4.2M19 4.2C17.2 6.1 15.9 8.3 15.3 10.8L17.3 11.2C17.8 9.1 18.8 7.2 20.4 5.6L19 4.2M17.3 13.8C17 15.5 16.2 17.1 15.1 18.4L16.5 19.8C17.8 18.2 18.8 16.3 19.3 14.2L17.3 13.8Z"/></svg>
+            </div>
+            <span class="badge-num" data-count="15">0</span>
+            <span class="badge-label">anos de praia</span>
+          </div>
+          <div class="badge">
+            <div class="badge-icon-svg">
+              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            </div>
+            <span class="badge-num" data-count="49" data-suffix="" data-divisor="10">0</span>
+            <span class="badge-label">Nota no Google</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPMENT -->
+<section class="equipment section-pad" id="equipamentos">
+  <div class="container">
+    <span class="section-label reveal">Catálogo</span>
+    <h2 class="section-title reveal">Equipamentos para <span class="deco">alugar<svg class="deco-wave" viewBox="0 0 120 14"><path d="M2,7 Q20,-1 40,7 T80,7 T118,7"/></svg></span></h2>
+    <p class="section-sub reveal">Tudo pronto, limpo e revisado. Retire na loja ou peça delivery na praia.</p>
+
+    <div class="filter-tabs reveal" role="tablist">
+      <button class="filter-tab active" data-filter="all">Todos</button>
+      <button class="filter-tab" data-filter="aqua">Aquáticos</button>
+      <button class="filter-tab" data-filter="praia">Praia</button>
+      <button class="filter-tab" data-filter="mob">Mobilidade</button>
+    </div>
+
+    <div class="equip-grid">
+      <article class="equip-card reveal" data-cat="aqua">
+        <div class="equip-img-wrap">
+          <img src="imgs/surfboards-rental.jpg" alt="Prancha de Surf" loading="lazy">
+        </div>
+        <div class="equip-card-body">
+          <h3 class="equip-name">Prancha de Surf</h3>
+          <div class="equip-price">R$ 40 / hora</div>
+          <span class="equip-badge badge-disp">Disponível</span>
+          <button class="btn btn-coral" data-item="Prancha de Surf">Reservar</button>
+        </div>
+      </article>
+      <article class="equip-card reveal" data-cat="aqua">
+        <div class="equip-img-wrap">
+          <img src="imgs/sup-ocean.jpg" alt="Stand Up Paddle" loading="lazy">
+        </div>
+        <div class="equip-card-body">
+          <h3 class="equip-name">Stand Up Paddle</h3>
+          <div class="equip-price">R$ 60 / hora</div>
+          <span class="equip-badge badge-disp">Disponível</span>
+          <button class="btn btn-coral" data-item="Stand Up Paddle">Reservar</button>
+        </div>
+      </article>
+      <article class="equip-card reveal" data-cat="aqua">
+        <div class="equip-img-wrap">
+          <img src="imgs/kayak.jpg" alt="Caiaque" loading="lazy">
+        </div>
+        <div class="equip-card-body">
+          <h3 class="equip-name">Caiaque</h3>
+          <div class="equip-price">R$ 70 / hora</div>
+          <span class="equip-badge badge-cons">Sob consulta</span>
+          <button class="btn btn-coral" data-item="Caiaque">Reservar</button>
+        </div>
+      </article>
+      <article class="equip-card reveal" data-cat="aqua">
+        <div class="equip-img-wrap">
+          <img src="imgs/snorkel2.jpg" alt="Kit Snorkel" loading="lazy">
+        </div>
+        <div class="equip-card-body">
+          <h3 class="equip-name">Kit Snorkel</h3>
+          <div class="equip-price">R$ 30 / hora</div>
+          <span class="equip-badge badge-disp">Disponível</span>
+          <button class="btn btn-coral" data-item="Kit Snorkel">Reservar</button>
+        </div>
+      </article>
+      <article class="equip-card reveal" data-cat="praia">
+        <div class="equip-img-wrap">
+          <img src="imgs/beach-umbrella.jpg" alt="Cadeira + Guarda-Sol" loading="lazy">
+        </div>
+        <div class="equip-card-body">
+          <h3 class="equip-name">Cadeira + Guarda-Sol</h3>
+          <div class="equip-price">R$ 35 / dia</div>
+          <span class="equip-badge badge-disp">Disponível</span>
+          <button class="btn btn-coral" data-item="Cadeira + Guarda-Sol">Reservar</button>
+        </div>
+      </article>
+      <article class="equip-card reveal" data-cat="mob">
+        <div class="equip-img-wrap">
+          <img src="imgs/beach-bike.jpg" alt="Bicicleta" loading="lazy">
+        </div>
+        <div class="equip-card-body">
+          <h3 class="equip-name">Bicicleta</h3>
+          <div class="equip-price">R$ 35 / hora</div>
+          <span class="equip-badge badge-cons">Sob consulta</span>
+          <button class="btn btn-coral" data-item="Bicicleta">Reservar</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING FORM -->
+<section class="booking" id="reservas">
+  <div class="container">
+    <div class="booking-grid">
+      <div class="reveal">
+        <span class="section-label">Reserva</span>
+        <h2 class="section-title">Garanta seu <span class="deco">equipamento<svg class="deco-wave" viewBox="0 0 120 14"><path d="M2,7 Q20,-1 40,7 T80,7 T118,7"/></svg></span></h2>
+        <p class="section-sub">Preencha o formulário e finalize a reserva direto pelo WhatsApp. Resposta em minutos.</p>
+        <p style="color:rgba(255,255,255,.6); font-size:.85rem; display:flex; align-items:center; gap:.5rem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(0,194,199,.8)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          Atendemos as praias do Centro, Itaguá e Tenório · Ubatuba/SP
+        </p>
+      </div>
+      <form class="booking-form reveal" id="bookingForm" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nome">Nome completo *</label>
+            <input type="text" id="nome" name="nome" required placeholder="Seu nome">
+          </div>
+          <div class="form-group">
+            <label for="whatsapp">WhatsApp *</label>
+            <input type="tel" id="whatsapp" name="whatsapp" required placeholder="(12) 99999-0000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="voce@email.com">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="item">Item desejado *</label>
+            <select id="item" name="item" required>
+              <option value="">Escolha...</option>
+              <option>Prancha de Surf</option>
+              <option>Stand Up Paddle</option>
+              <option>Caiaque</option>
+              <option>Kit Snorkel</option>
+              <option>Cadeira + Guarda-Sol</option>
+              <option>Bicicleta</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="data">Data *</label>
+            <input type="date" id="data" name="data" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="hora">Horário</label>
+            <select id="hora" name="hora">
+              <option>Manhã (8h-12h)</option>
+              <option>Tarde (12h-17h)</option>
+              <option>Final da tarde (17h-19h)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Modalidade</label>
+            <div class="radio-group">
+              <input type="radio" id="ret" name="modo" value="Retirada" checked>
+              <label for="ret">Retirada</label>
+              <input type="radio" id="del" name="modo" value="Delivery">
+              <label for="del">Delivery</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="obs">Observações</label>
+          <textarea id="obs" name="obs" rows="2" placeholder="Algum detalhe importante?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-coral" style="width:100%; justify-content:center; margin-top:.5rem">
+          Enviar Reserva via WhatsApp
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- CLASSES -->
+<section class="classes section-pad" id="aulas">
+  <div class="container">
+    <span class="section-label reveal">Escola de Surf</span>
+    <h2 class="section-title reveal">Aulas para todos os <span class="deco">níveis<svg class="deco-wave" viewBox="0 0 120 14"><path d="M2,7 Q20,-1 40,7 T80,7 T118,7"/></svg></span></h2>
+    <p class="section-sub reveal">Material incluso, ondas seguras e muita energia boa.</p>
+
+    <div class="classes-grid">
+      <div class="class-card reveal">
+        <span class="class-tag">Mais Procurada</span>
+        <h3 class="class-name">Aula Individual</h3>
+        <p class="class-meta">Atenção 100% dedicada · 1h30 · Até 1 aluno</p>
+        <div class="class-price">R$ 180<small>/aula</small></div>
+        <ul>
+          <li>Prancha apropriada para o nível</li>
+          <li>Leash + rashguard inclusos</li>
+          <li>Foto e vídeo da sessão</li>
+          <li>Aquecimento e teoria na areia</li>
+        </ul>
+        <button class="btn btn-turq" style="width:100%; justify-content:center" data-class="Aula Individual">Agendar agora</button>
+      </div>
+      <div class="class-card featured reveal">
+        <span class="class-tag">Família & Amigos</span>
+        <h3 class="class-name">Aula em Grupo</h3>
+        <p class="class-meta">Diversão coletiva · 2h · Até 4 alunos</p>
+        <div class="class-price">R$ 120<small>/pessoa</small></div>
+        <ul>
+          <li>Pranchas para cada aluno</li>
+          <li>Leash + rashguard inclusos</li>
+          <li>Foto em grupo de cortesia</li>
+          <li>Suco natural pós-aula</li>
+        </ul>
+        <button class="btn btn-coral" style="width:100%; justify-content:center" data-class="Aula em Grupo">Agendar agora</button>
+      </div>
+    </div>
+
+    <div class="levels reveal">
+      <h3>Sua jornada no surf</h3>
+      <div class="stepper">
+        <div class="step" data-num="1">
+          <h4>Iniciante</h4>
+          <p>Primeiros remadas, leitura básica do mar e a sagrada primeira onda em pé.</p>
+        </div>
+        <div class="step" data-num="2">
+          <h4>Intermediário</h4>
+          <p>Tomadas de onda na diagonal, manobras simples e leitura de séries.</p>
+        </div>
+        <div class="step" data-num="3">
+          <h4>Avançado</h4>
+          <p>Manobras radicais, posicionamento estratégico e free surf assistido.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENDA -->
+<section class="agenda" id="agenda">
+  <div class="container">
+    <span class="section-label reveal">Agenda</span>
+    <h2 class="section-title reveal">Horários da <span class="deco">semana<svg class="deco-wave" viewBox="0 0 120 14"><path d="M2,7 Q20,-1 40,7 T80,7 T118,7"/></svg></span></h2>
+    <p class="section-sub reveal">Toque em um horário livre para reservar sua aula.</p>
+    <div class="calendar reveal">
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="galeria">
+  <div class="container">
+    <span class="section-label reveal">Galeria</span>
+    <h2 class="section-title reveal">Momentos no <span class="deco">mar<svg class="deco-wave" viewBox="0 0 120 14"><path d="M2,7 Q20,-1 40,7 T80,7 T118,7"/></svg></span></h2>
+    <p class="section-sub reveal">Cliques reais de aulas, festas e dias perfeitos de surf.</p>
+    <div class="masonry reveal" id="masonry"></div>
+    <div class="gal-cta">
+      <a href="https://instagram.com/ondasecia" target="_blank" rel="noopener" class="btn btn-outline-turq" style="color:var(--ocean); border-color:var(--ocean)">Ver mais no Instagram</a>
+    </div>
+  </div>
+</section>
+
+<!-- WEATHER -->
+<section class="weather" id="previsao">
+  <div class="container">
+    <span class="section-label reveal">Mar & Tempo</span>
+    <h2 class="section-title reveal">Como está em <span class="deco">Ubatuba<svg class="deco-wave" viewBox="0 0 120 14"><path d="M2,7 Q20,-1 40,7 T80,7 T118,7"/></svg></span></h2>
+    <p class="section-sub reveal">Atualizado ao vivo via Open-Meteo. Confira antes de cair n'água.</p>
+
+    <div class="weather-now reveal" id="weatherNow">
+      <div class="weather-icon" id="wIcon">🌤️</div>
+      <div>
+        <div class="weather-loc">Ubatuba · SP · Brasil</div>
+        <div class="weather-temp"><span id="wTemp">—</span>°C</div>
+        <div class="weather-stats">
+          <div class="wstat"><strong id="wWind">—</strong> km/h vento</div>
+          <div class="wstat"><strong id="wWave">—</strong> m ondas</div>
+          <div class="wstat"><strong id="wPer">—</strong> s período</div>
+        </div>
+      </div>
+      <div class="surf-rating" id="wRating">
+        <div class="rate-label">Surf hoje</div>
+        <div class="rate-val">—</div>
+      </div>
+    </div>
+
+    <div class="forecast" id="forecast"></div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="location" id="contato">
+  <div class="container">
+    <span class="section-label reveal">Contato</span>
+    <h2 class="section-title reveal">Venha nos <span class="deco">visitar<svg class="deco-wave" viewBox="0 0 120 14"><path d="M2,7 Q20,-1 40,7 T80,7 T118,7"/></svg></span></h2>
+
+    <div class="loc-grid">
+      <div class="map-wrap reveal">
+        <iframe
+          src="https://www.google.com/maps?q=Ubatuba,SP&output=embed"
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          title="Localização Ondas & Cia em Ubatuba"></iframe>
+      </div>
+      <div class="contact-cards reveal">
+        <div class="ccard">
+          <div class="ccard-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </div>
+          <div><h4>Endereço</h4><p>Av. Iperoig, 500 · Centro · Ubatuba/SP</p></div>
+        </div>
+        <div class="ccard">
+          <div class="ccard-icon">
+            <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+          </div>
+          <div><h4>Telefone</h4><p>(12) 99999-0000</p></div>
+        </div>
+        <div class="ccard">
+          <div class="ccard-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          </div>
+          <div><h4>E-mail</h4><p>bruno@ondasecia.com.br</p></div>
+        </div>
+        <div class="ccard">
+          <div class="ccard-icon">
+            <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+          </div>
+          <div><h4>Horário</h4><p>Todos os dias · 7h às 19h</p></div>
+        </div>
+        <div class="socials" aria-label="Redes sociais">
+          <a href="https://instagram.com/ondasecia" target="_blank" rel="noopener" class="soc" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.25.07 1.63.07 4.85s0 3.6-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.25.06-1.63.07-4.85.07s-3.6 0-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.15 0-3.5 0-4.74.07-1.07.05-1.65.23-2.04.38-.51.2-.88.44-1.26.82s-.62.75-.82 1.26c-.15.39-.33.97-.38 2.04C2.7 8.5 2.7 8.85 2.7 12s0 3.5.06 4.74c.05 1.07.23 1.65.38 2.04.2.51.44.88.82 1.26s.75.62 1.26.82c.39.15.97.33 2.04.38C8.5 21.3 8.85 21.3 12 21.3s3.5 0 4.74-.06c1.07-.05 1.65-.23 2.04-.38.51-.2.88-.44 1.26-.82s.62-.75.82-1.26c.15-.39.33-.97.38-2.04.06-1.24.06-1.59.06-4.74s0-3.5-.06-4.74c-.05-1.07-.23-1.65-.38-2.04a3.4 3.4 0 0 0-.82-1.26 3.4 3.4 0 0 0-1.26-.82c-.39-.15-.97-.33-2.04-.38C15.5 4 15.15 4 12 4zm0 3.05a4.95 4.95 0 1 1 0 9.9 4.95 4.95 0 0 1 0-9.9zm0 1.8a3.15 3.15 0 1 0 0 6.3 3.15 3.15 0 0 0 0-6.3zm5.15-1.95a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3z"/></svg>
+          </a>
+          <a href="https://wa.me/5512999990000" target="_blank" rel="noopener" class="soc" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24"><path d="M20.5 3.5A11.8 11.8 0 0 0 12 0 11.8 11.8 0 0 0 .2 11.8c0 2.1.6 4.1 1.6 5.9L0 24l6.5-1.7a11.7 11.7 0 0 0 5.5 1.4h.01a11.8 11.8 0 0 0 8.5-20.2zM12 21.7c-1.7 0-3.3-.5-4.8-1.3l-.3-.2-3.9 1 1-3.8-.2-.4a9.8 9.8 0 1 1 18.1-5.2 9.8 9.8 0 0 1-9.9 9.9zm5.5-7.3c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5a9 9 0 0 1-1.6-2c-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.7-1.7c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4a3 3 0 0 0-1 2.3c0 1.4 1 2.7 1.1 2.9.2.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.4.2-1.5-.1-.2-.3-.2-.6-.4z"/></svg>
+          </a>
+          <a href="https://tiktok.com/@ondasecia" target="_blank" rel="noopener" class="soc" aria-label="TikTok">
+            <svg viewBox="0 0 24 24"><path d="M19.6 6.7a5.4 5.4 0 0 1-3.3-1.1 5.5 5.5 0 0 1-2-3.6h-3.5v13.6a2.5 2.5 0 1 1-1.8-2.4V9.6a6 6 0 1 0 5.3 6V9.4a8.7 8.7 0 0 0 5.3 1.8V6.7z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<svg class="footer-wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0,40 C320,80 480,0 720,40 C960,80 1120,0 1440,40 L1440,80 L0,80 Z" fill="#0A2342"/>
+</svg>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="foot-logo">Ondas <span>&</span> Cia</div>
+        <p>Alugue. Aprenda. Surfe. A praia de Ubatuba do jeito que ela merece — com cuidado, alegria e respeito ao mar.</p>
+      </div>
+      <div>
+        <h5>Navegue</h5>
+        <ul>
+          <li><a href="#equipamentos">Equipamentos</a></li>
+          <li><a href="#aulas">Aulas</a></li>
+          <li><a href="#agenda">Agenda</a></li>
+          <li><a href="#galeria">Galeria</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Contato</h5>
+        <ul>
+          <li><a href="https://wa.me/5512999990000">WhatsApp</a></li>
+          <li><a href="mailto:bruno@ondasecia.com.br">E-mail</a></li>
+          <li><a href="https://instagram.com/ondasecia">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2025 Ondas & Cia — Todos os direitos reservados · Feito com amor em Ubatuba</div>
+  </div>
+</footer>
+
+<!-- WHATSAPP FAB -->
+<a href="https://wa.me/5512999990000?text=Olá%20Bruno!%20Vi%20o%20site%20da%20Ondas%20%26%20Cia" class="wa-fab" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M20.5 3.5A11.8 11.8 0 0 0 12 0 11.8 11.8 0 0 0 .2 11.8c0 2.1.6 4.1 1.6 5.9L0 24l6.5-1.7a11.7 11.7 0 0 0 5.5 1.4h.01a11.8 11.8 0 0 0 8.5-20.2zM17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5a9 9 0 0 1-1.6-2c-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.7-1.7c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4a3 3 0 0 0-1 2.3c0 1.4 1 2.7 1.1 2.9.2.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.4.2-1.5-.1-.2-.3-.2-.6-.4z"/></svg>
+</a>
+
+<!-- BACK TO TOP -->
+<button class="top-btn" id="topBtn" aria-label="Voltar ao topo">↑</button>
+
+<!-- MODAL (Agendar Aula) -->
+<div class="modal-back" id="modalBack" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Fechar">×</button>
+    <h3 id="modalTitle">Reservar aula</h3>
+    <p id="modalSub">Preencha seus dados e confirme via WhatsApp.</p>
+    <form id="modalForm">
+      <div class="form-group">
+        <label for="mNome">Nome</label>
+        <input type="text" id="mNome" required placeholder="Seu nome">
+      </div>
+      <div class="form-group">
+        <label for="mWa">WhatsApp</label>
+        <input type="tel" id="mWa" required placeholder="(12) 99999-0000">
+      </div>
+      <div class="form-group">
+        <label for="mLevel">Nível</label>
+        <select id="mLevel">
+          <option>Iniciante</option><option>Intermediário</option><option>Avançado</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-coral" style="width:100%; justify-content:center">Confirmar via WhatsApp</button>
+    </form>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+  <button class="lightbox-close" id="lbClose" aria-label="Fechar">×</button>
+  <div class="lightbox-content" id="lbContent"></div>
+  <div class="lightbox-cap" id="lbCap"></div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="login-modal-back" id="loginModalBack" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="login-modal">
+    <div class="login-modal-header">
+      <button class="login-close" id="loginClose" aria-label="Fechar">×</button>
+      <h2 id="loginTitle">Ondas & Cia</h2>
+      <p>Entre na sua conta ou crie uma nova</p>
+      <svg class="wave-deco" viewBox="0 0 460 20" preserveAspectRatio="none">
+        <path d="M0,10 Q115,0 230,10 T460,10 L460,20 L0,20 Z" fill="#fff"/>
+      </svg>
+    </div>
+    <div class="login-modal-body">
+      <div class="login-tabs">
+        <button class="login-tab active" data-tab="login">Entrar</button>
+        <button class="login-tab" data-tab="register">Cadastrar</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div class="login-form active" id="loginForm">
+        <div id="loginError" class="login-error"></div>
+        <div class="form-group">
+          <label for="loginEmail">E-mail</label>
+          <input type="email" id="loginEmail" placeholder="voce@email.com">
+        </div>
+        <div class="form-group">
+          <label for="loginPass">Senha</label>
+          <input type="password" id="loginPass" placeholder="••••••••">
+        </div>
+        <button class="btn btn-coral" style="width:100%; justify-content:center; margin-top:.5rem" id="loginSubmit">Entrar</button>
+        <p style="text-align:center; margin-top:1rem; font-size:.82rem; color:var(--muted)">
+          Conta de demonstração: <strong>demo@ondas.com</strong> / <strong>surf123</strong>
+        </p>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div class="login-form" id="registerForm">
+        <div id="registerError" class="login-error"></div>
+        <div id="registerSuccess" class="login-success"></div>
+        <div class="form-group">
+          <label for="regNome">Nome completo</label>
+          <input type="text" id="regNome" placeholder="Seu nome">
+        </div>
+        <div class="form-group">
+          <label for="regEmail">E-mail</label>
+          <input type="email" id="regEmail" placeholder="voce@email.com">
+        </div>
+        <div class="form-group">
+          <label for="regPass">Senha</label>
+          <input type="password" id="regPass" placeholder="Mínimo 6 caracteres">
+        </div>
+        <div class="form-group">
+          <label for="regPhone">WhatsApp</label>
+          <input type="tel" id="regPhone" placeholder="(12) 99999-0000">
+        </div>
+        <button class="btn btn-coral" style="width:100%; justify-content:center; margin-top:.5rem" id="registerSubmit">Criar conta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL (Arthur) -->
+<div class="profile-page" id="adminPage" role="main" aria-label="Painel Administrativo">
+  <button class="profile-close-btn" id="adminClose" aria-label="Fechar painel">×</button>
+
+  <div class="profile-header">
+    <div class="profile-header-inner">
+      <div class="profile-avatar-big" style="background:var(--ocean); border-color:var(--turquoise)">BR</div>
+      <div class="profile-info">
+        <h1>Bruno Nascimento <span style="font-size:.9rem; background:var(--turquoise); color:var(--ocean); padding:.2rem .6rem; border-radius:6px; margin-left:.5rem">ADMIN</span></h1>
+        <p>Painel de Controle Ondas & Cia</p>
+        <div class="profile-badges-row">
+          <span class="profile-badge-pill">Proprietário</span>
+          <span class="profile-badge-pill">Ubatuba/SP</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-body">
+    <div class="admin-tabs">
+      <div class="admin-tab active" data-admin-tab="dashboard">Dashboard</div>
+      <div class="admin-tab" data-admin-tab="reservas">Reservas</div>
+      <div class="admin-tab" data-admin-tab="aulas">Escola</div>
+      <div class="admin-tab" data-admin-tab="alunos">Alunos</div>
+    </div>
+
+    <!-- Tab: Dashboard -->
+    <div class="admin-content-section active" id="admin-dashboard">
+      <div class="profile-section">
+        <h3>Dashboard Geral</h3>
+        <div class="profile-stats-grid">
+          <div class="profile-stat admin-stat">
+            <span class="profile-stat-num">R$ 4.250</span>
+            <span class="profile-stat-label">Receita Junho</span>
+          </div>
+          <div class="profile-stat admin-stat">
+            <span class="profile-stat-num">18</span>
+            <span class="profile-stat-label">Novos Alunos</span>
+          </div>
+          <div class="profile-stat admin-stat">
+            <span class="profile-stat-num">42</span>
+            <span class="profile-stat-label">Aluguéis Totais</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Reservas -->
+    <div class="admin-content-section" id="admin-reservas">
+      <div class="profile-section">
+        <h3>Gestão de Reservas</h3>
+        <div class="admin-list" id="adminReservasList">
+          <!-- Dinâmico -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Aulas -->
+    <div class="admin-content-section" id="admin-aulas">
+      <div class="profile-section">
+        <h3>Próximas Aulas</h3>
+        <div class="admin-list" id="adminAulasList">
+          <!-- Dinâmico -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Alunos -->
+    <div class="admin-content-section" id="admin-alunos">
+      <div class="profile-section">
+        <h3>Base de Alunos</h3>
+        <div class="admin-list" id="adminAlunosList">
+          <!-- Dinâmico -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE (Normal User) -->
+<div class="profile-page" id="profilePage" role="main" aria-label="Perfil do usuário">
+  <button class="profile-close-btn" id="profileClose" aria-label="Fechar perfil">×</button>
+
+  <div class="profile-header">
+    <div class="profile-header-inner">
+      <div class="profile-avatar-big" id="profileAvatarBig">?</div>
+      <div class="profile-info">
+        <h1 id="profileName">Usuário</h1>
+        <p id="profileEmail">email@exemplo.com</p>
+        <div class="profile-badges-row">
+          <span class="profile-badge-pill">Aluno Ativo</span>
+          <span class="profile-badge-pill" id="profileLevel">Iniciante</span>
+          <span class="profile-badge-pill" id="profileMember">Membro desde 2024</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-body">
+    <!-- Stats -->
+    <div class="profile-section">
+      <h3>
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+        Resumo da conta
+      </h3>
+      <div class="profile-stats-grid">
+        <div class="profile-stat">
+          <span class="profile-stat-num" id="statAulas">8</span>
+          <span class="profile-stat-label">Aulas realizadas</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-num" id="statReservas">5</span>
+          <span class="profile-stat-label">Reservas feitas</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-num" id="statHoras">12h</span>
+          <span class="profile-stat-label">No mar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Histórico de Aulas -->
+    <div class="profile-section">
+      <h3>
+        <svg viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
+        Histórico de Aulas
+      </h3>
+      <div class="aulas-list" id="aulasList">
+        <div class="aula-item">
+          <div class="aula-icon surf">
+            <svg viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
+          </div>
+          <div class="aula-info">
+            <strong>Aula Individual — Iniciante</strong>
+            <span>15 de Maio, 2025 · 08:00 · Praia do Itaguá</span>
+          </div>
+          <span class="aula-status concluida">Concluída</span>
+        </div>
+        <div class="aula-item">
+          <div class="aula-icon surf">
+            <svg viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
+          </div>
+          <div class="aula-info">
+            <strong>Aula em Grupo — Intermediário</strong>
+            <span>22 de Maio, 2025 · 10:00 · Praia do Centro</span>
+          </div>
+          <span class="aula-status concluida">Concluída</span>
+        </div>
+        <div class="aula-item">
+          <div class="aula-icon sup">
+            <svg viewBox="0 0 24 24"><path d="M17 16.99c-1.35 0-2.2.42-2.95.8-.65.33-1.18.6-2.05.6-.9 0-1.4-.25-2.05-.6-.75-.38-1.57-.8-2.95-.8s-2.2.42-2.95.8c-.65.33-1.18.6-2.05.6v1.95c1.35 0 2.2-.42 2.95-.8.65-.33 1.18-.6 2.05-.6s1.4.25 2.05.6c.75.38 1.57.8 2.95.8s2.2-.42 2.95-.8c.65-.33 1.18-.6 2.05-.6.9 0 1.4.25 2.05.6.75.38 1.57.8 2.95.8v-1.95c-.9 0-1.4-.25-2.05-.6-.75-.38-1.58-.8-2.95-.8zm0-4.5c-1.35 0-2.2.43-2.95.8-.65.32-1.18.6-2.05.6-.9 0-1.4-.25-2.05-.6-.75-.38-1.57-.8-2.95-.8s-2.2.43-2.95.8c-.65.32-1.18.6-2.05.6v1.95c1.35 0 2.2-.43 2.95-.8.65-.35 1.18-.6 2.05-.6s1.4.25 2.05.6c.75.38 1.57.8 2.95.8s2.2-.43 2.95-.8c.65-.35 1.18-.6 2.05-.6.9 0 1.4.25 2.05.6.75.38 1.57.8 2.95.8v-1.95c-.9 0-1.4-.25-2.05-.6-.75-.38-1.58-.8-2.95-.8zM18.5 9c-.83 0-1.5-.67-1.5-1.5S17.67 6 18.5 6s1.5.67 1.5 1.5S19.33 9 18.5 9zM3 12.49v1.96c1.35 0 2.2-.43 2.95-.8.65-.35 1.18-.6 2.05-.6s1.4.25 2.05.6c.75.38 1.57.8 2.95.8s2.2-.43 2.95-.8c.65-.35 1.18-.6 2.05-.6.9 0 1.4.25 2.05.6.75.38 1.57.8 2.95.8v-1.95c-.9 0-1.4-.25-2.05-.6-.75-.38-1.58-.8-2.95-.8-1.35 0-2.2.43-2.95.8-.65.32-1.18.6-2.05.6-.9 0-1.4-.25-2.05-.6-.75-.38-1.57-.8-2.95-.8-1.35 0-2.2.43-2.95.8-.65.32-1.18.6-2.05.6z"/></svg>
+          </div>
+          <div class="aula-info">
+            <strong>Stand Up Paddle — Iniciante</strong>
+            <span>01 de Junho, 2025 · 15:00 · Praia do Tenório</span>
+          </div>
+          <span class="aula-status agendada">Agendada</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reservas -->
+    <div class="profile-section">
+      <h3>
+        <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+        Últimas Reservas
+      </h3>
+      <div class="reservas-list">
+        <div class="reserva-item">
+          <img src="imgs/surfboards-rental.jpg" alt="Prancha de Surf" class="reserva-img">
+          <div class="reserva-info">
+            <strong>Prancha de Surf</strong>
+            <span>20 de Maio, 2025 · Manhã · Retirada</span>
+          </div>
+          <span class="aula-status concluida">Concluída</span>
+        </div>
+        <div class="reserva-item">
+          <img src="imgs/sup-ocean.jpg" alt="Stand Up Paddle" class="reserva-img">
+          <div class="reserva-info">
+            <strong>Stand Up Paddle</strong>
+            <span>28 de Maio, 2025 · Tarde · Delivery</span>
+          </div>
+          <span class="aula-status concluida">Concluída</span>
+        </div>
+        <div class="reserva-item">
+          <img src="imgs/beach-umbrella.jpg" alt="Cadeira + Guarda-Sol" class="reserva-img">
+          <div class="reserva-info">
+            <strong>Cadeira + Guarda-Sol</strong>
+            <span>05 de Junho, 2025 · Manhã · Delivery</span>
+          </div>
+          <span class="aula-status agendada">Agendada</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editar Perfil -->
+    <div class="profile-section">
+      <h3>
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        Editar Perfil
+      </h3>
+      <div class="profile-form-grid">
+        <div class="form-group">
+          <label for="editNome">Nome</label>
+          <input type="text" id="editNome" placeholder="Seu nome">
+        </div>
+        <div class="form-group">
+          <label for="editPhone">WhatsApp</label>
+          <input type="tel" id="editPhone" placeholder="(12) 99999-0000">
+        </div>
+        <div class="form-group">
+          <label for="editLevel">Nível de Surf</label>
+          <input type="text" id="editLevel" placeholder="Iniciante">
+        </div>
+        <div class="form-group">
+          <label for="editCity">Cidade</label>
+          <input type="text" id="editCity" placeholder="Ubatuba/SP">
+        </div>
+      </div>
+      <button class="btn btn-turq" style="margin-top:1rem" id="saveProfile">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ============ CONFIG ============ */
+const WA_NUMBER = '5512999990000';
+
+/* ============ LOADER ============ */
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('loader').classList.add('hide'), 1500);
+});
+
+/* ============ CUSTOM CURSOR ============ */
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+window.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY;
+  dot.style.left=mx+'px'; dot.style.top=my+'px';
+});
+function tickRing(){ rx+=(mx-rx)*.15; ry+=(my-ry)*.15;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(tickRing);
+}
+tickRing();
+document.querySelectorAll('a, button, .equip-card, .gal-item, .cal-slot.free, .cal-slot.medium').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{dot.classList.add('hover'); ring.classList.add('hover')});
+  el.addEventListener('mouseleave',()=>{dot.classList.remove('hover'); ring.classList.remove('hover')});
+});
+
+/* ============ NAVBAR ============ */
+const navbar = document.getElementById('navbar');
+const topBtn = document.getElementById('topBtn');
+window.addEventListener('scroll',()=>{
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+  topBtn.classList.toggle('show', window.scrollY > 400);
+});
+topBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+/* ============ HAMBURGER ============ */
+const ham = document.getElementById('hamburger');
+const drawer = document.getElementById('drawer');
+ham.addEventListener('click',()=>{
+  const open = ham.classList.toggle('open');
+  drawer.classList.toggle('open', open);
+  drawer.setAttribute('aria-hidden', !open);
+  ham.setAttribute('aria-expanded', open);
+});
+drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+  ham.classList.remove('open'); drawer.classList.remove('open');
+}));
+
+/* ============ HERO WAVE CANVAS ============ */
+const canvas = document.getElementById('waveCanvas');
+const ctx = canvas.getContext('2d');
+function sizeCanvas(){ canvas.width=window.innerWidth; canvas.height=canvas.offsetHeight; }
+sizeCanvas(); window.addEventListener('resize',sizeCanvas);
+const waves = [
+  {a:40, l:.005, s:.02, y:.55, c:'rgba(0,194,199,.15)'},
+  {a:30, l:.008, s:.03, y:.65, c:'rgba(0,194,199,.25)'},
+  {a:50, l:.004, s:.015,y:.75, c:'rgba(0,194,199,.35)'},
+  {a:25, l:.012, s:.04, y:.85, c:'rgba(10,35,66,.5)'},
+];
+let t=0;
+function drawWaves(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const g = ctx.createLinearGradient(0,0,0,canvas.height);
+  g.addColorStop(0,'#0A2342'); g.addColorStop(1,'#0d2e5a');
+  ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(let i=0;i<60;i++){
+    const x=(i*97)%canvas.width, y=(i*53)%(canvas.height*.4);
+    ctx.fillStyle=`rgba(255,255,255,${.2+Math.sin(t*.02+i)*.15})`;
+    ctx.fillRect(x,y,1,1);
+  }
+  waves.forEach(w=>{
+    ctx.beginPath();
+    ctx.moveTo(0,canvas.height);
+    for(let x=0;x<=canvas.width;x+=4){
+      const y = canvas.height*w.y + Math.sin(x*w.l + t*w.s) * w.a;
+      ctx.lineTo(x,y);
+    }
+    ctx.lineTo(canvas.width,canvas.height); ctx.closePath();
+    ctx.fillStyle=w.c; ctx.fill();
+  });
+  t++;
+  requestAnimationFrame(drawWaves);
+}
+drawWaves();
+
+/* ============ PARALLAX HERO ============ */
+window.addEventListener('scroll',()=>{
+  const heroContent = document.querySelector('.hero-content');
+  if(heroContent) heroContent.style.transform = `translateY(${window.scrollY*.3}px)`;
+});
+
+/* ============ REVEAL ON SCROLL ============ */
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.classList.contains('badges')) animateCounters();
+    }
+  });
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+const badgesIO = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ animateCounters(); badgesIO.unobserve(e.target); } });
+},{threshold:.5});
+const badgesEl = document.querySelector('.badges');
+if(badgesEl) badgesIO.observe(badgesEl);
+
+function animateCounters(){
+  document.querySelectorAll('.badge-num').forEach(el=>{
+    if(el.dataset.done) return;
+    el.dataset.done='1';
+    const target = parseInt(el.dataset.count,10);
+    const div = parseFloat(el.dataset.divisor||1);
+    let n=0; const dur=1600, start=performance.now();
+    function step(now){
+      const p = Math.min((now-start)/dur,1);
+      const v = target * (1-Math.pow(1-p,3));
+      el.textContent = div>1 ? (v/div).toFixed(1) : Math.floor(v);
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+/* ============ RIPPLE ============ */
+document.querySelectorAll('.btn').forEach(btn=>{
+  btn.addEventListener('click', e=>{
+    const r = btn.getBoundingClientRect();
+    const span = document.createElement('span');
+    const size = Math.max(r.width,r.height);
+    span.className='ripple';
+    span.style.width=span.style.height=size+'px';
+    span.style.left=(e.clientX-r.left-size/2)+'px';
+    span.style.top=(e.clientY-r.top-size/2)+'px';
+    btn.appendChild(span);
+    setTimeout(()=>span.remove(),600);
+  });
+});
+
+/* ============ FILTERS ============ */
+document.querySelectorAll('.filter-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const f = tab.dataset.filter;
+    document.querySelectorAll('.equip-card').forEach(c=>{
+      c.style.display = (f==='all'||c.dataset.cat===f) ? '' : 'none';
+    });
+  });
+});
+
+/* ============ EQUIP RESERVE → SCROLL + PREFILL ============ */
+document.querySelectorAll('.equip-card .btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.getElementById('item').value = b.dataset.item;
+    document.getElementById('reservas').scrollIntoView({behavior:'smooth'});
+  });
+});
+
+/* ============ BOOKING FORM ============ */
+document.getElementById('bookingForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = e.target;
+  const required = ['nome','whatsapp','item','data'];
+  let ok = true;
+  required.forEach(name=>{
+    const el = f[name];
+    if(!el.value.trim()){ el.classList.add('error'); ok=false; }
+    else el.classList.remove('error');
+  });
+  if(!ok) return;
+  const modo = f.querySelector('input[name="modo"]:checked').value;
+  const msg = `Olá Bruno! Quero fazer uma reserva na Ondas & Cia:%0A%0A`+
+    `*Nome:* ${f.nome.value}%0A`+
+    `*WhatsApp:* ${f.whatsapp.value}%0A`+
+    `*E-mail:* ${f.email.value||'-'}%0A`+
+    `*Item:* ${f.item.value}%0A`+
+    `*Data:* ${f.data.value}%0A`+
+    `*Horário:* ${f.hora.value}%0A`+
+    `*Modalidade:* ${modo}%0A`+
+    `*Obs:* ${f.obs.value||'-'}`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,'_blank');
+});
+
+/* ============ CALENDAR ============ */
+const days = ['Hora','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const times = ['08:00','10:00','13:00','15:00','17:00'];
+const grid = document.getElementById('calendarGrid');
+days.forEach(d=>{ const el=document.createElement('div'); el.className='cal-head'; el.textContent=d; grid.appendChild(el); });
+const statuses = ['free','free','medium','free','full','free','free','medium','free','full','medium','free','free','free','full','free','free','medium','free','free','full','free','medium','free','free','free','free','full','medium','free','free','full','free','free','medium'];
+let si=0;
+times.forEach(time=>{
+  const t=document.createElement('div'); t.className='cal-time'; t.textContent=time; grid.appendChild(t);
+  for(let d=0; d<7; d++){
+    const s = statuses[si++ % statuses.length];
+    const slot=document.createElement('button');
+    slot.className='cal-slot '+s;
+    slot.textContent = s==='free'?'Livre' : s==='medium'?'Quase' : 'Lotado';
+    if(s!=='full'){
+      slot.addEventListener('click',()=>openModal(days[d+1], time));
+    } else slot.disabled = true;
+    grid.appendChild(slot);
+  }
+});
+
+/* ============ MODAL (Aulas) ============ */
+const modalBack = document.getElementById('modalBack');
+const modalClose = document.getElementById('modalClose');
+let modalCtx = {};
+function openModal(day,time){
+  modalCtx={day,time};
+  document.getElementById('modalTitle').textContent = `Aula ${day} · ${time}`;
+  document.getElementById('modalSub').textContent = 'Preencha seus dados e confirme via WhatsApp.';
+  modalBack.classList.add('open');
+}
+function closeModal(){ modalBack.classList.remove('open'); }
+modalClose.addEventListener('click',closeModal);
+modalBack.addEventListener('click',e=>{ if(e.target===modalBack) closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeLightbox(); closeLoginModal(); } });
+
+document.getElementById('modalForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const n=document.getElementById('mNome').value.trim();
+  const w=document.getElementById('mWa').value.trim();
+  const l=document.getElementById('mLevel').value;
+  if(!n||!w) return;
+  const ctx = modalCtx.day ? `${modalCtx.day} às ${modalCtx.time}` : 'aula';
+  const msg = `Olá Bruno! Quero agendar uma *${ctx}* na Ondas & Cia.%0A%0A*Nome:* ${n}%0A*WhatsApp:* ${w}%0A*Nível:* ${l}`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,'_blank');
+  closeModal();
+});
+
+document.querySelectorAll('[data-class]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    modalCtx={day:b.dataset.class,time:''};
+    document.getElementById('modalTitle').textContent = b.dataset.class;
+    document.getElementById('modalSub').textContent = 'Confirme seus dados para agendar.';
+    modalBack.classList.add('open');
+  });
+});
+
+/* ============ GALLERY ============ */
+const galData = [
+  {cap:'Aula em grupo · Manhã', src:'imgs/surf-lesson.jpg', ratio:'4/5'},
+  {cap:'Sessão golden hour', src:'imgs/golden-hour.jpg', ratio:'1/1'},
+  {cap:'Stand Up no canto', src:'imgs/sup-ocean.jpg', ratio:'3/4'},
+  {cap:'Primeira onda · Iniciante', src:'imgs/surf-lesson2.jpg', ratio:'4/3'},
+  {cap:'Pôr do sol · Tenório', src:'imgs/sunset-surf.jpg', ratio:'1/1'},
+  {cap:'Equipamentos prontos', src:'imgs/surfboards-rental.jpg', ratio:'4/5'},
+  {cap:'Ubatuba vista do alto', src:'imgs/ubatuba-praia.jpg', ratio:'3/4'},
+  {cap:'Mar de vidro · Ubatuba', src:'imgs/ubatuba-ondas.jpg', ratio:'4/3'},
+  {cap:'Bruno em ação', src:'imgs/surf-brasil.jpg', ratio:'1/1'},
+];
+const masonry = document.getElementById('masonry');
+galData.forEach((g,i)=>{
+  const item=document.createElement('div');
+  item.className='gal-item';
+  item.innerHTML=`
+    <div class="gal-img">
+      <img src="${g.src}" alt="${g.cap}" loading="lazy" style="aspect-ratio:${g.ratio}; object-fit:cover; width:100%">
+    </div>
+    <div class="gal-overlay"><div class="gal-caption">${g.cap}</div></div>`;
+  item.addEventListener('click',()=>openLightbox(g));
+  masonry.appendChild(item);
+});
+
+const lb = document.getElementById('lightbox');
+function openLightbox(g){
+  const lbContent = document.getElementById('lbContent');
+  lbContent.innerHTML = `<img src="${g.src}" alt="${g.cap}" style="width:100%; height:auto; border-radius:20px; display:block">`;
+  document.getElementById('lbCap').textContent = g.cap;
+  lb.classList.add('open');
+}
+function closeLightbox(){ lb.classList.remove('open'); }
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+lb.addEventListener('click',e=>{ if(e.target===lb) closeLightbox(); });
+
+/* ============ WEATHER ============ */
+async function loadWeather(){
+  const lat=-23.43, lon=-45.07;
+  try{
+    const [w,m] = await Promise.all([
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max&timezone=America%2FSao_Paulo&forecast_days=5`).then(r=>r.json()),
+      fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&current=wave_height,wave_period&daily=wave_height_max&timezone=America%2FSao_Paulo&forecast_days=5`).then(r=>r.json()).catch(()=>null)
+    ]);
+    const cur = w.current;
+    const wave = m?.current?.wave_height ?? 1.2;
+    const per = m?.current?.wave_period ?? 8;
+    document.getElementById('wTemp').textContent = Math.round(cur.temperature_2m);
+    document.getElementById('wWind').textContent = Math.round(cur.wind_speed_10m);
+    document.getElementById('wWave').textContent = wave.toFixed(1);
+    document.getElementById('wPer').textContent = Math.round(per);
+    document.getElementById('wIcon').textContent = wcodeIcon(cur.weather_code);
+    const rate = surfScore(cur.wind_speed_10m, wave);
+    const rEl = document.getElementById('wRating');
+    rEl.querySelector('.rate-val').textContent = rate.label;
+    rEl.style.background = rate.color;
+    const fc = document.getElementById('forecast');
+    fc.innerHTML='';
+    const dayNames=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    for(let i=0;i<5;i++){
+      const d = new Date(w.daily.time[i]+'T12:00:00');
+      const waveMax = m?.daily?.wave_height_max?.[i] ?? '—';
+      const card = document.createElement('div');
+      card.className='fcard';
+      card.innerHTML=`
+        <div class="fday">${dayNames[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}</div>
+        <div class="ficon">${wcodeIcon(w.daily.weather_code[i])}</div>
+        <div class="ftemp">${Math.round(w.daily.temperature_2m_max[i])}°</div>
+        <div class="fmeta">min ${Math.round(w.daily.temperature_2m_min[i])}° · ondas ${typeof waveMax==='number'?waveMax.toFixed(1)+'m':waveMax}</div>`;
+      fc.appendChild(card);
+    }
+  }catch(e){
+    console.warn('weather error',e);
+    document.getElementById('weatherNow').innerHTML = '<p style="color:rgba(255,255,255,.7)">Não foi possível carregar a previsão agora. Tente novamente em instantes.</p>';
+  }
+}
+function wcodeIcon(c){
+  if(c==null) return '🌤️';
+  if(c===0) return '☀️';
+  if(c<=2) return '🌤️';
+  if(c===3) return '☁️';
+  if(c<=49) return '🌫️';
+  if(c<=69) return '🌧️';
+  if(c<=79) return '🌨️';
+  if(c<=99) return '⛈️';
+  return '🌤️';
+}
+function surfScore(wind, wave){
+  let score = 0;
+  if(wave>=.8 && wave<=2.2) score+=2;
+  else if(wave>2.2 && wave<3) score+=1;
+  if(wind<12) score+=2;
+  else if(wind<20) score+=1;
+  if(score>=3) return {label:'Ótimo', color:'#1a8546'};
+  if(score===2) return {label:'Bom', color:'#FF6B4A'};
+  return {label:'Aguarde', color:'#a07a00'};
+}
+loadWeather();
+
+/* ============ ABOUT PARALLAX ============ */
+const aboutSec = document.getElementById('sobre');
+window.addEventListener('scroll',()=>{
+  if(!aboutSec) return;
+  const rect = aboutSec.getBoundingClientRect();
+  if(rect.bottom>0 && rect.top<window.innerHeight){
+    const offset = (window.innerHeight - rect.top)*.05;
+    aboutSec.style.backgroundPosition = `center ${-offset}px`;
+  }
+});
+
+/* ============================================================
+   AUTH SYSTEM (localStorage-based)
+   ============================================================ */
+const USERS_KEY = 'ondas_users';
+const SESSION_KEY = 'ondas_session';
+
+function getUsers(){ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function getSession(){ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }
+function saveSession(u){ localStorage.setItem(SESSION_KEY, JSON.stringify(u)); }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+/* Seed demo user */
+(function seedDemo(){
+  const users = getUsers();
+  // Forçar atualização do Arthur como Admin
+  const existingIdx = users.findIndex(u=>u.email==='demo@ondas.com');
+  const adminData = {
+    id:'admin1', nome:'Bruno Surfista', email:'demo@ondas.com', pass:'surf123',
+    phone:'(12) 98877-6655', role:'admin', city:'Ubatuba/SP',
+    memberSince:'2023'
+  };
+  
+  if(existingIdx > -1) {
+    users[existingIdx] = adminData;
+  } else {
+    users.push(adminData);
+  }
+  saveUsers(users);
+  
+  // Atualizar sessão se o Arthur estiver logado
+  const session = getSession();
+  if(session && session.email === 'demo@ondas.com') {
+    saveSession(adminData);
+  }
+})();
+
+/* Update navbar based on session */
+function updateNavbar(){
+  const session = getSession();
+  const loginLi = document.getElementById('navLoginLi');
+  const userLi = document.getElementById('navUserLi');
+  const mobileLogin = document.getElementById('mobileLoginBtn');
+  
+  if(session){
+    loginLi.style.display='none';
+    userLi.style.display='';
+    const initials = session.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+    document.getElementById('navAvatar').textContent = initials;
+    document.getElementById('navUserName').textContent = session.nome.split(' ')[0];
+    
+    // Atualizar botão de perfil direto com o nome correto
+    const directBtn = document.getElementById('directProfileBtn');
+    if(session.role === 'admin'){
+      directBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg> Painel Admin';
+      directBtn.style.background = 'var(--ocean)';
+    } else {
+      directBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg> Meu Perfil';
+      directBtn.style.background = 'var(--turquoise)';
+    }
+
+    if(mobileLogin) {
+      mobileLogin.textContent = session.role === 'admin' ? 'Painel Admin (Bruno)' : 'Meu Perfil';
+      mobileLogin.onclick = (e) => { e.preventDefault(); closeDrawer(); openUserArea(); };
+    }
+  } else {
+    loginLi.style.display='';
+    userLi.style.display='none';
+    if(mobileLogin) {
+      mobileLogin.textContent = 'Entrar / Cadastrar';
+      mobileLogin.onclick = (e) => { e.preventDefault(); closeDrawer(); openLoginModal(); };
+    }
+  }
+}
+
+function closeDrawer(){
+  const drawer = document.getElementById('drawer');
+  const hamburger = document.getElementById('hamburger');
+  if(drawer) drawer.classList.remove('open');
+  if(hamburger) {
+    hamburger.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+}
+
+/* Open/Close Login Modal */
+function openLoginModal(){
+  document.getElementById('loginModalBack').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLoginModal(){
+  document.getElementById('loginModalBack').classList.remove('open');
+  document.body.style.overflow='';
+  document.getElementById('loginError').style.display='none';
+  document.getElementById('registerError').style.display='none';
+  document.getElementById('registerSuccess').style.display='none';
+}
+
+document.getElementById('navLoginBtn').addEventListener('click', openLoginModal);
+document.getElementById('mobileLoginBtn').addEventListener('click', e=>{ e.preventDefault(); openLoginModal(); });
+document.getElementById('loginClose').addEventListener('click', closeLoginModal);
+document.getElementById('loginModalBack').addEventListener('click', e=>{
+  if(e.target===document.getElementById('loginModalBack')) closeLoginModal();
+});
+
+/* Login Tabs */
+document.querySelectorAll('.login-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.login-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.login-form').forEach(f=>f.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab+'Form').classList.add('active');
+  });
+});
+
+/* LOGIN */
+document.getElementById('loginSubmit').addEventListener('click',()=>{
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display='none';
+  if(!email||!pass){ errEl.textContent='Preencha todos os campos.'; errEl.style.display='block'; return; }
+  const users = getUsers();
+  const user = users.find(u=>u.email===email && u.pass===pass);
+  if(!user){ errEl.textContent='E-mail ou senha incorretos.'; errEl.style.display='block'; return; }
+  saveSession(user);
+  updateNavbar();
+  closeLoginModal();
+  const welcomeMsg = user.nome.includes('Bruno') ? `E aí Bruno! Pronto para o mar?` : `Bem-vindo de volta, ${user.nome.split(' ')[0]}!`;
+  showToast(welcomeMsg);
+  // Redirecionar corretamente dependendo do papel
+  setTimeout(openUserArea, 800);
+});
+
+/* REGISTER */
+document.getElementById('registerSubmit').addEventListener('click',()=>{
+  const nome = document.getElementById('regNome').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const phone = document.getElementById('regPhone').value.trim();
+  const errEl = document.getElementById('registerError');
+  const sucEl = document.getElementById('registerSuccess');
+  errEl.style.display='none'; sucEl.style.display='none';
+  if(!nome||!email||!pass){ errEl.textContent='Preencha nome, e-mail e senha.'; errEl.style.display='block'; return; }
+  if(pass.length<6){ errEl.textContent='A senha deve ter pelo menos 6 caracteres.'; errEl.style.display='block'; return; }
+  const users = getUsers();
+  if(users.find(u=>u.email===email)){ errEl.textContent='Este e-mail já está cadastrado.'; errEl.style.display='block'; return; }
+  const newUser = {
+    id:'u'+Date.now(), nome, email, pass, phone,
+    level:'Iniciante', city:'', memberSince:new Date().getFullYear().toString(),
+    aulas:0, reservas:0, horas:'0h'
+  };
+  users.push(newUser);
+  saveUsers(users);
+  saveSession(newUser);
+  sucEl.textContent='Conta criada com sucesso! Bem-vindo(a)!';
+  sucEl.style.display='block';
+  setTimeout(()=>{
+    updateNavbar();
+    closeLoginModal();
+    showToast(`Olá, ${nome.split(' ')[0]}! Sua conta foi criada.`);
+  }, 1200);
+});
+
+/* LOGOUT */
+function logout(){
+  clearSession();
+  updateNavbar();
+  // Fechar qualquer painel aberto
+  document.getElementById('adminPage').classList.remove('open');
+  document.getElementById('profilePage').classList.remove('open');
+  document.body.style.overflow='';
+  showToast('Você saiu da conta. Até logo!');
+}
+document.getElementById('ddLogout').addEventListener('click', logout);
+
+/* PROFILE & ADMIN ROUTING */
+function openUserArea(){
+  const session = getSession();
+  if(!session) return;
+  if(session.role === 'admin') openAdminPanel();
+  else openProfile();
+}
+
+function openAdminPanel(){
+  loadAdminData();
+  document.getElementById('adminPage').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function loadAdminData(){
+  // Mock data for admin
+  const resList = document.getElementById('adminReservasList');
+  resList.innerHTML = `
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <strong>Ricardo Oliveira</strong>
+        <span>Prancha de Surf · Amanhã (Manhã) · Retirada</span>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-action btn-approve" title="Aprovar"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button>
+        <button class="btn-action btn-reject" title="Rejeitar"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+      </div>
+    </div>
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <strong>Mariana Santos</strong>
+        <span>Kit Snorkel · 05/06 · Delivery</span>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-action btn-approve" title="Aprovar"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button>
+        <button class="btn-action btn-reject" title="Rejeitar"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+      </div>
+    </div>
+  `;
+
+  const aulasList = document.getElementById('adminAulasList');
+  aulasList.innerHTML = `
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <strong>Aula em Grupo (4 pessoas)</strong>
+        <span>Hoje · 10:00 · Praia do Centro</span>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-action btn-approve" style="background:var(--turquoise); color:#fff"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
+      </div>
+    </div>
+  `;
+
+  const alunosList = document.getElementById('adminAlunosList');
+  const users = getUsers().filter(u=>u.role!=='admin');
+  alunosList.innerHTML = users.length ? users.map(u=>`
+    <div class="admin-item">
+      <div class="admin-item-info">
+        <strong>${u.nome}</strong>
+        <span>${u.email} · ${u.level||'Iniciante'}</span>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-action btn-approve" title="Ver detalhes"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button>
+      </div>
+    </div>
+  `).join('') : '<p style="padding:1rem; color:var(--muted)">Nenhum aluno cadastrado ainda.</p>';
+}
+
+function openProfile(){
+  const session = getSession();
+  if(!session) return;
+  const initials = session.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('profileAvatarBig').textContent = initials;
+  document.getElementById('profileName').textContent = session.nome;
+  document.getElementById('profileEmail').textContent = session.email;
+  document.getElementById('profileLevel').textContent = session.level||'Iniciante';
+  document.getElementById('profileMember').textContent = `Membro desde ${session.memberSince||'2024'}`;
+  document.getElementById('statAulas').textContent = session.aulas||0;
+  document.getElementById('statReservas').textContent = session.reservas||0;
+  document.getElementById('statHoras').textContent = session.horas||'0h';
+  document.getElementById('editNome').value = session.nome||'';
+  document.getElementById('editPhone').value = session.phone||'';
+  document.getElementById('editLevel').value = session.level||'Iniciante';
+  document.getElementById('editCity').value = session.city||'';
+  document.getElementById('profilePage').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+document.getElementById('directProfileBtn').addEventListener('click', e=>{
+  e.preventDefault(); openUserArea();
+});
+
+document.getElementById('profileClose').addEventListener('click',()=>{
+  document.getElementById('profilePage').classList.remove('open');
+  document.body.style.overflow='';
+});
+
+document.getElementById('adminClose').addEventListener('click',()=>{
+  document.getElementById('adminPage').classList.remove('open');
+  document.body.style.overflow='';
+});
+
+/* Admin Tabs Logic */
+document.querySelectorAll('.admin-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.admin-content-section').forEach(s=>s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('admin-'+tab.dataset.adminTab).classList.add('active');
+  });
+});
+
+/* Save profile */
+document.getElementById('saveProfile').addEventListener('click',()=>{
+  const session = getSession();
+  if(!session) return;
+  session.nome = document.getElementById('editNome').value.trim()||session.nome;
+  session.phone = document.getElementById('editPhone').value.trim();
+  session.level = document.getElementById('editLevel').value.trim()||'Iniciante';
+  session.city = document.getElementById('editCity').value.trim();
+  saveSession(session);
+  const users = getUsers();
+  const idx = users.findIndex(u=>u.id===session.id);
+  if(idx>-1){ users[idx]=session; saveUsers(users); }
+  updateNavbar();
+  document.getElementById('profileName').textContent = session.nome;
+  document.getElementById('profileLevel').textContent = session.level;
+  const initials = session.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('profileAvatarBig').textContent = initials;
+  showToast('Perfil atualizado com sucesso!');
+});
+
+/* Init navbar */
+updateNavbar();
+
+/* ============ TOAST NOTIFICATION ============ */
+function showToast(msg){
+  const toast = document.createElement('div');
+  toast.style.cssText=`
+    position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+    background:var(--ocean); color:#fff; padding:.8rem 1.8rem;
+    border-radius:50px; font-size:.9rem; font-weight:500;
+    box-shadow:0 10px 30px rgba(0,0,0,.3); z-index:9999;
+    animation:fadeUp .3s ease; white-space:nowrap;
+    border-left:4px solid var(--turquoise);
+  `;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.style.opacity='0'; toast.style.transition='opacity .4s'; setTimeout(()=>toast.remove(),400); }, 3000);
+}
+
+/* ============================================================
+   ACCESSIBILITY PANEL
+   ============================================================ */
+const a11yToggle = document.getElementById('a11yToggle');
+const a11yPanel = document.getElementById('a11yPanel');
+const a11yClose = document.getElementById('a11yClose');
+
+a11yToggle.addEventListener('click',()=>{ a11yPanel.classList.toggle('open'); });
+a11yClose.addEventListener('click',()=>{ a11yPanel.classList.remove('open'); });
+
+/* Font size */
+document.querySelectorAll('[data-a11y]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const action = btn.dataset.a11y;
+    // Font
+    if(action.startsWith('font-')){
+      document.querySelectorAll('[data-a11y^="font-"]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.classList.remove('a11y-large-text','a11y-xl-text');
+      if(action==='font-large') document.body.classList.add('a11y-large-text');
+      if(action==='font-xl') document.body.classList.add('a11y-xl-text');
+    }
+    // Contrast
+    if(action.startsWith('contrast-')||action==='grayscale'){
+      document.querySelectorAll('[data-a11y^="contrast-"],[data-a11y="grayscale"]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.classList.remove('a11y-high-contrast','a11y-grayscale');
+      if(action==='contrast-high') document.body.classList.add('a11y-high-contrast');
+      if(action==='grayscale') document.body.classList.add('a11y-grayscale');
+    }
+    saveA11yPrefs();
+  });
+});
+
+/* Toggles */
+document.getElementById('a11yDyslexia').addEventListener('change', e=>{
+  document.body.classList.toggle('a11y-dyslexia', e.target.checked);
+  saveA11yPrefs();
+});
+document.getElementById('a11yLineHeight').addEventListener('change', e=>{
+  document.body.classList.toggle('a11y-line-height', e.target.checked);
+  saveA11yPrefs();
+});
+document.getElementById('a11yFocus').addEventListener('change', e=>{
+  document.body.classList.toggle('a11y-focus-visible', e.target.checked);
+  saveA11yPrefs();
+});
+document.getElementById('a11yNoAnim').addEventListener('change', e=>{
+  document.body.classList.toggle('a11y-no-animations', e.target.checked);
+  saveA11yPrefs();
+});
+
+/* Reset */
+document.getElementById('a11yReset').addEventListener('click',()=>{
+  document.body.classList.remove('a11y-large-text','a11y-xl-text','a11y-high-contrast','a11y-grayscale','a11y-dyslexia','a11y-line-height','a11y-focus-visible','a11y-no-animations');
+  document.querySelectorAll('[data-a11y]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('a11yDyslexia').checked=false;
+  document.getElementById('a11yLineHeight').checked=false;
+  document.getElementById('a11yFocus').checked=false;
+  document.getElementById('a11yNoAnim').checked=false;
+  localStorage.removeItem('ondas_a11y');
+  showToast('Configurações de acessibilidade restauradas.');
+});
+
+/* Persist a11y prefs */
+function saveA11yPrefs(){
+  const prefs = {
+    classes: [...document.body.classList].filter(c=>c.startsWith('a11y-')),
+    dyslexia: document.getElementById('a11yDyslexia').checked,
+    lineHeight: document.getElementById('a11yLineHeight').checked,
+    focus: document.getElementById('a11yFocus').checked,
+    noAnim: document.getElementById('a11yNoAnim').checked,
+  };
+  localStorage.setItem('ondas_a11y', JSON.stringify(prefs));
+}
+
+function loadA11yPrefs(){
+  const raw = localStorage.getItem('ondas_a11y');
+  if(!raw) return;
+  try{
+    const prefs = JSON.parse(raw);
+    prefs.classes.forEach(c=>document.body.classList.add(c));
+    document.getElementById('a11yDyslexia').checked = prefs.dyslexia;
+    document.getElementById('a11yLineHeight').checked = prefs.lineHeight;
+    document.getElementById('a11yFocus').checked = prefs.focus;
+    document.getElementById('a11yNoAnim').checked = prefs.noAnim;
+    // Restore active btn states
+    if(prefs.classes.includes('a11y-large-text')) document.querySelector('[data-a11y="font-large"]').classList.add('active');
+    if(prefs.classes.includes('a11y-xl-text')) document.querySelector('[data-a11y="font-xl"]').classList.add('active');
+    if(prefs.classes.includes('a11y-high-contrast')) document.querySelector('[data-a11y="contrast-high"]').classList.add('active');
+    if(prefs.classes.includes('a11y-grayscale')) document.querySelector('[data-a11y="grayscale"]').classList.add('active');
+  }catch(e){}
+}
+loadA11yPrefs();
+
+</script>
+</body>
+</html>
